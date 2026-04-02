@@ -7,12 +7,16 @@ export const Container = styled.View`
   background-color: ${({ theme }) => theme.colors.background};
 `;
 
-export const Card = styled(ImageBackground)`
+export const CardFrame = styled.View`
   flex: 1;
   margin: ${({ theme }) => theme.space.lg}px;
   margin-top: 60px;
   border-radius: ${({ theme }) => theme.radii.lg}px;
   overflow: hidden;
+`;
+
+export const Card = styled(ImageBackground)`
+  flex: 1;
 `;
 
 export const CardOverlay = styled(LinearGradient)`
@@ -24,21 +28,12 @@ export const CardOverlay = styled(LinearGradient)`
 
 export const CardButtons = styled.View`
   position: absolute;
-  top: ${({ theme }) => theme.space.md}px;
-  right: ${({ theme }) => theme.space.md}px;
+  top: ${({ theme }) => 60 + theme.space.md}px;
+  right: ${({ theme }) => theme.space.lg + theme.space.md}px;
   gap: ${({ theme }) => theme.space.sm}px;
 `;
 
-export const StyleToggleButton = styled.Pressable`
-  width: 36px;
-  height: 36px;
-  border-radius: 18px;
-  background-color: rgba(255, 255, 255, 0.2);
-  align-items: center;
-  justify-content: center;
-`;
-
-export const ImageToggleButton = styled.Pressable`
+export const CardIconButton = styled.Pressable`
   width: 36px;
   height: 36px;
   border-radius: 18px;

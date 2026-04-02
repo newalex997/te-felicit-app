@@ -33,8 +33,6 @@ interface GreetingContextValue {
   font: FontEntry;
   greetingAnimatedStyle: AnimatedStyle<ViewStyle>;
   fetchGreeting: () => Promise<void>;
-  fetchMessage: () => Promise<void>;
-  fetchImage: () => Promise<void>;
   changeFont: () => void;
   changeImage: () => void;
 }
@@ -54,16 +52,6 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
       const data = await greetingApi.getGreeting();
       setText(data.message);
       setImageUrl(data.imageUrl);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchMessage = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await greetingApi.getMessage();
-      setText(data.message);
     } finally {
       setLoading(false);
     }
@@ -107,8 +95,6 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         font: FONTS[fontIndex],
         greetingAnimatedStyle,
         fetchGreeting,
-        fetchMessage,
-        fetchImage,
         changeFont,
         changeImage,
       }}
