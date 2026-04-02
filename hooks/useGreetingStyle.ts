@@ -25,19 +25,19 @@ const FONTS: FontEntry[] = [
 
 const FADE_DURATION = 180;
 
-export function useGreetingStyle() {
+export function useGreetingStyle(greetingImageUrl: string) {
   const [fontIndex, setFontIndex] = useState(0);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState(greetingImageUrl);
   const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    if (greetingImageUrl) setImageUrl(greetingImageUrl);
+  }, [greetingImageUrl]);
 
   const fetchImage = useCallback(async () => {
     const data = await greetingApi.getImage();
     setImageUrl(data.imageUrl);
   }, []);
-
-  useEffect(() => {
-    fetchImage();
-  }, [fetchImage]);
 
   const greetingAnimatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -47,7 +47,7 @@ export function useGreetingStyle() {
     setFontIndex((i) => (i + 1) % FONTS.length);
   }, []);
 
-  function cycleFont() {
+  function changeFont() {
     opacity.value = withTiming(0, { duration: FADE_DURATION }, (finished) => {
       if (!finished) return;
       scheduleOnRN(advanceFont);
@@ -55,7 +55,7 @@ export function useGreetingStyle() {
     });
   }
 
-  function cycleImage() {
+  function changeImage() {
     fetchImage();
   }
 
@@ -63,7 +63,7 @@ export function useGreetingStyle() {
     font: FONTS[fontIndex],
     image: { uri: imageUrl } as ImageSourcePropType,
     greetingAnimatedStyle,
-    cycleFont,
-    cycleImage,
+    changeFont,
+    changeImage,
   };
 }

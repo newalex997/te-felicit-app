@@ -9,6 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider } from "styled-components/native";
 import { theme } from "../theme";
+import { GreetingProvider } from "../context/GreetingContext";
 
 export default function RootLayout() {
   const [greatVibesLoaded] = useGreatVibesFonts({ GreatVibes_400Regular });
@@ -23,8 +24,10 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider theme={theme}>
-        <StatusBar style="light" />
-        <Stack screenOptions={{ headerShown: false }} />
+        <GreetingProvider>
+          <StatusBar style="light" />
+          <Stack screenOptions={{ headerShown: false }} />
+        </GreetingProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );
