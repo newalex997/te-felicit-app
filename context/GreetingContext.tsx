@@ -8,12 +8,22 @@ import {
   withTiming,
 } from "react-native-reanimated";
 import { greetingApi } from "../api/greeting";
+import type { SupportedLocale } from "../i18n";
 
 type FontEntry = {
   fontFamily: string;
   fontSize: number;
   lineHeight: number;
 };
+
+const TEXT_COLORS = [
+  "#FFFFFF",
+  "#FFE066",
+  "#FFB3C1",
+  "#A8EDEA",
+  "#C3B1E1",
+  "#FFDAB9",
+] as const;
 
 const FONTS: FontEntry[] = [
   { fontFamily: "GreatVibes_400Regular", fontSize: 32, lineHeight: 44 },
@@ -31,31 +41,40 @@ interface GreetingContextValue {
   image: ImageSourcePropType;
   loading: boolean;
   font: FontEntry;
+  textColor: string;
   greetingAnimatedStyle: AnimatedStyle<ViewStyle>;
   fetchGreeting: () => Promise<void>;
   changeFont: () => void;
   changeImage: () => void;
+  changeColor: () => void;
 }
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
 
-export function GreetingProvider({ children }: { children: React.ReactNode }) {
+export function GreetingProvider({
+  children,
+  locale,
+}: {
+  children: React.ReactNode;
+  locale: SupportedLocale;
+}) {
   const [text, setText] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [fontIndex, setFontIndex] = useState(0);
+  const [colorIndex, setColorIndex] = useState(0);
   const opacity = useSharedValue(1);
 
   const fetchGreeting = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await greetingApi.getGreeting();
+      const data = await greetingApi.getGreeting(locale);
       setText(data.message);
       setImageUrl(data.imageUrl);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [locale]);
 
   const fetchImage = useCallback(async () => {
     const data = await greetingApi.getImage();
@@ -86,6 +105,10 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     fetchImage();
   }
 
+  function changeColor() {
+    setColorIndex((i) => (i + 1) % TEXT_COLORS.length);
+  }
+
   return (
     <GreetingContext.Provider
       value={{
@@ -93,10 +116,12 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         image: { uri: imageUrl } as ImageSourcePropType,
         loading,
         font: FONTS[fontIndex],
+        textColor: TEXT_COLORS[colorIndex],
         greetingAnimatedStyle,
         fetchGreeting,
         changeFont,
         changeImage,
+        changeColor,
       }}
     >
       {children}

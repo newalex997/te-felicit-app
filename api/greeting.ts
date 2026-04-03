@@ -8,7 +8,9 @@ import type {
 export type { GreetingImageResponseDto, GreetingMessageResponseDto, GreetingResponseDto };
 
 export const greetingApi = {
-  getGreeting: () => apiClient.get<GreetingResponseDto>("/greeting"),
-  getMessage: () => apiClient.get<GreetingMessageResponseDto>("/greeting/message"),
+  getGreeting: (locale?: string) =>
+    apiClient.get<GreetingResponseDto>("/greeting", locale),
+  getMessage: (locale?: string) =>
+    apiClient.get<GreetingMessageResponseDto>("/greeting/message", locale),
   getImage: () => apiClient.get<GreetingImageResponseDto>("/greeting/image"),
 };
