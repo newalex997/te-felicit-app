@@ -1,49 +1,29 @@
 import { Ionicons } from "@expo/vector-icons";
-import { View, ImageSourcePropType, ViewStyle } from "react-native";
-import { GestureDetector, PanGesture } from "react-native-gesture-handler";
+import { View, ViewStyle } from "react-native";
 import Animated, { AnimatedStyle } from "react-native-reanimated";
+import { useGreetingContext } from "../context/GreetingContext";
+import { useShareContext } from "../context/ShareContext";
 import {
   Card,
   CardButtons,
   CardFrame,
   CardIconButton,
   CardOverlay,
-  Greeting,
 } from "../app/index.styles";
+import { CardFont } from "./CardFont";
 
 const OVERLAY_COLORS = ["rgba(0,0,0,0.15)", "rgba(0,0,0,0.55)"] as const;
 const OVERLAY_START = { x: 0, y: 0 };
 const OVERLAY_END = { x: 0, y: 1 };
 
 type Props = {
-  cardRef: React.RefObject<null>;
   cardStyle: AnimatedStyle<ViewStyle>;
-  image: ImageSourcePropType;
-  gesture: PanGesture;
-  dragStyle: AnimatedStyle<ViewStyle>;
-  greetingAnimatedStyle: AnimatedStyle<ViewStyle>;
-  text: string;
-  font: { fontFamily: string; fontSize: number; lineHeight: number };
-  textColor: string;
-  changeImage: () => void;
-  changeFont: () => void;
-  changeColor: () => void;
 };
 
-export function GreetingCard({
-  cardRef,
-  cardStyle,
-  image,
-  gesture,
-  dragStyle,
-  greetingAnimatedStyle,
-  text,
-  font,
-  textColor,
-  changeImage,
-  changeFont,
-  changeColor,
-}: Props) {
+export function GreetingCard({ cardStyle }: Props) {
+  const { image, changeFont, changeImage, changeColor } = useGreetingContext();
+  const { cardRef } = useShareContext();
+
   return (
     <Animated.View style={cardStyle}>
       <CardFrame>
@@ -54,13 +34,7 @@ export function GreetingCard({
               start={OVERLAY_START}
               end={OVERLAY_END}
             >
-              <GestureDetector gesture={gesture}>
-                <Animated.View style={dragStyle}>
-                  <Animated.View style={greetingAnimatedStyle}>
-                    <Greeting style={[font, { color: textColor }]}>{text}</Greeting>
-                  </Animated.View>
-                </Animated.View>
-              </GestureDetector>
+              <CardFont />
             </CardOverlay>
           </Card>
         </View>

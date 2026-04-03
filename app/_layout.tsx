@@ -4,14 +4,13 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider } from "styled-components/native";
 import { theme } from "../theme";
-import { I18nProvider, useI18n } from "../context/I18nContext";
+import { I18nProvider } from "../context/I18nContext";
 import { GreetingProvider } from "../context/GreetingContext";
 import { ShareProvider } from "../context/ShareContext";
 
 function AppProviders({ children }: { children: React.ReactNode }) {
-  const { locale } = useI18n();
   return (
-    <GreetingProvider locale={locale}>
+    <GreetingProvider>
       <ShareProvider>{children}</ShareProvider>
     </GreetingProvider>
   );

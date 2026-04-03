@@ -8,7 +8,6 @@ import {
   withTiming,
 } from "react-native-reanimated";
 import { greetingApi } from "../api/greeting";
-import type { SupportedLocale } from "../i18n";
 
 type FontEntry = {
   fontFamily: string;
@@ -41,40 +40,37 @@ interface GreetingContextValue {
   image: ImageSourcePropType;
   loading: boolean;
   font: FontEntry;
+  fontSizeOffset: number;
   textColor: string;
   greetingAnimatedStyle: AnimatedStyle<ViewStyle>;
   fetchGreeting: () => Promise<void>;
   changeFont: () => void;
   changeImage: () => void;
   changeColor: () => void;
+  changeFontSize: (delta: number) => void;
 }
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
 
-export function GreetingProvider({
-  children,
-  locale,
-}: {
-  children: React.ReactNode;
-  locale: SupportedLocale;
-}) {
+export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const [text, setText] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [fontIndex, setFontIndex] = useState(0);
   const [colorIndex, setColorIndex] = useState(0);
+  const [fontSizeOffset, setFontSizeOffset] = useState(0);
   const opacity = useSharedValue(1);
 
   const fetchGreeting = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await greetingApi.getGreeting(locale);
+      const data = await greetingApi.getGreeting();
       setText(data.message);
       setImageUrl(data.imageUrl);
     } finally {
       setLoading(false);
     }
-  }, [locale]);
+  }, []);
 
   const fetchImage = useCallback(async () => {
     const data = await greetingApi.getImage();
@@ -91,7 +87,12 @@ export function GreetingProvider({
 
   const advanceFont = useCallback(() => {
     setFontIndex((i) => (i + 1) % FONTS.length);
+    setFontSizeOffset(0);
   }, []);
+
+  function changeFontSize(delta: number) {
+    setFontSizeOffset((prev) => Math.max(-12, Math.min(24, prev + delta)));
+  }
 
   function changeFont() {
     opacity.value = withTiming(0, { duration: FADE_DURATION }, (finished) => {
@@ -116,12 +117,14 @@ export function GreetingProvider({
         image: { uri: imageUrl } as ImageSourcePropType,
         loading,
         font: FONTS[fontIndex],
+        fontSizeOffset,
         textColor: TEXT_COLORS[colorIndex],
         greetingAnimatedStyle,
         fetchGreeting,
         changeFont,
         changeImage,
         changeColor,
+        changeFontSize,
       }}
     >
       {children}

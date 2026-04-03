@@ -1,19 +1,21 @@
 const BASE_URL = "http://192.168.0.145:9000/api/v1";
 
-async function request<T>(
-  path: string,
-  options?: RequestInit & { locale?: string },
-): Promise<T> {
-  const { locale, ...fetchOptions } = options ?? {};
+let _locale: string | undefined;
+
+export function setApiLocale(locale: string) {
+  _locale = locale;
+}
+
+async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const headers: Record<string, string> = {
-    ...(fetchOptions.headers as Record<string, string>),
+    ...(options?.headers as Record<string, string>),
   };
-  if (locale) {
-    headers["Accept-Language"] = locale;
+  if (_locale) {
+    headers["Accept-Language"] = _locale;
   }
 
   const response = await fetch(`${BASE_URL}${path}`, {
-    ...fetchOptions,
+    ...options,
     headers,
   });
 
@@ -27,6 +29,5 @@ async function request<T>(
 }
 
 export const apiClient = {
-  get: <T>(path: string, locale?: string) =>
-    request<T>(path, { locale }),
+  get: <T>(path: string) => request<T>(path),
 };
