@@ -1,5 +1,11 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { ImageSourcePropType, ViewStyle } from "react-native";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { ViewStyle } from "react-native";
 import { scheduleOnRN } from "react-native-worklets";
 import {
   AnimatedStyle,
@@ -37,44 +43,45 @@ const FADE_DURATION = 180;
 
 interface GreetingContextValue {
   text: string;
-  image: ImageSourcePropType;
+  slogan: string;
+  imageUrl: string;
   loading: boolean;
   font: FontEntry;
-  fontSizeOffset: number;
+  sloganFont: FontEntry;
   textColor: string;
   greetingAnimatedStyle: AnimatedStyle<ViewStyle>;
+  sloganAnimatedStyle: AnimatedStyle<ViewStyle>;
   fetchGreeting: () => Promise<void>;
   changeFont: () => void;
+  changeSloganFont: () => void;
   changeImage: () => void;
   changeColor: () => void;
-  changeFontSize: (delta: number) => void;
 }
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
 
 export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const [text, setText] = useState("");
+  const [slogan, setSlogan] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [fontIndex, setFontIndex] = useState(0);
+  const [sloganFontIndex, setSloganFontIndex] = useState(0);
   const [colorIndex, setColorIndex] = useState(0);
-  const [fontSizeOffset, setFontSizeOffset] = useState(0);
+
   const opacity = useSharedValue(1);
+  const sloganOpacity = useSharedValue(1);
 
   const fetchGreeting = useCallback(async () => {
     setLoading(true);
     try {
       const data = await greetingApi.getGreeting();
       setText(data.message);
+      setSlogan(data.slogan);
       setImageUrl(data.imageUrl);
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  const fetchImage = useCallback(async () => {
-    const data = await greetingApi.getImage();
-    setImageUrl(data.imageUrl);
   }, []);
 
   useEffect(() => {
@@ -85,46 +92,64 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     opacity: opacity.value,
   }));
 
+  const sloganAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: sloganOpacity.value,
+  }));
+
   const advanceFont = useCallback(() => {
     setFontIndex((i) => (i + 1) % FONTS.length);
-    setFontSizeOffset(0);
   }, []);
 
-  function changeFontSize(delta: number) {
-    setFontSizeOffset((prev) => Math.max(-12, Math.min(24, prev + delta)));
-  }
+  const advanceSloganFont = useCallback(() => {
+    setSloganFontIndex((i) => (i + 1) % FONTS.length);
+  }, []);
 
-  function changeFont() {
+  const changeFont = useCallback(() => {
     opacity.value = withTiming(0, { duration: FADE_DURATION }, (finished) => {
       if (!finished) return;
       scheduleOnRN(advanceFont);
       opacity.value = withTiming(1, { duration: FADE_DURATION });
     });
-  }
+  }, [advanceFont, opacity]);
 
-  function changeImage() {
-    fetchImage();
-  }
+  const changeSloganFont = useCallback(() => {
+    sloganOpacity.value = withTiming(
+      0,
+      { duration: FADE_DURATION },
+      (finished) => {
+        if (!finished) return;
+        scheduleOnRN(advanceSloganFont);
+        sloganOpacity.value = withTiming(1, { duration: FADE_DURATION });
+      },
+    );
+  }, [advanceSloganFont, sloganOpacity]);
 
-  function changeColor() {
+  const changeImage = useCallback(async () => {
+    const data = await greetingApi.getImage();
+    setImageUrl(data.imageUrl);
+  }, []);
+
+  const changeColor = useCallback(() => {
     setColorIndex((i) => (i + 1) % TEXT_COLORS.length);
-  }
+  }, []);
 
   return (
     <GreetingContext.Provider
       value={{
         text,
-        image: { uri: imageUrl } as ImageSourcePropType,
+        slogan,
+        imageUrl,
         loading,
         font: FONTS[fontIndex],
-        fontSizeOffset,
+        sloganFont: FONTS[sloganFontIndex],
         textColor: TEXT_COLORS[colorIndex],
         greetingAnimatedStyle,
+        sloganAnimatedStyle,
         fetchGreeting,
         changeFont,
+        changeSloganFont,
         changeImage,
         changeColor,
-        changeFontSize,
       }}
     >
       {children}
@@ -134,6 +159,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
 
 export function useGreetingContext() {
   const ctx = useContext(GreetingContext);
-  if (!ctx) throw new Error("useGreetingContext must be used within GreetingProvider");
+  if (!ctx)
+    throw new Error("useGreetingContext must be used within GreetingProvider");
   return ctx;
 }

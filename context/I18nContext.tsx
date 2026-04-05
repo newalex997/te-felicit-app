@@ -13,6 +13,7 @@ const I18nContext = createContext<I18nContextValue | null>(null);
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<SupportedLocale>(() => {
     const detected = detectLocale();
+    i18n.locale = detected;
     setApiLocale(detected);
     return detected;
   });
@@ -22,8 +23,6 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     setApiLocale(newLocale);
     setLocaleState(newLocale);
   }
-
-  i18n.locale = locale;
 
   return (
     <I18nContext.Provider

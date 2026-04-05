@@ -44,14 +44,6 @@ export const CardIconButton = styled.Pressable`
   justify-content: center;
 `;
 
-export const Greeting = styled.Text`
-  color: ${({ theme }) => theme.colors.text};
-  font-family: GreatVibes_400Regular;
-  font-size: 32px;
-  text-align: center;
-  line-height: 44px;
-`;
-
 export const Buttons = styled.View`
   flex-direction: row;
   gap: ${({ theme }) => theme.space.md}px;

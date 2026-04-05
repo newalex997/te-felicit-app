@@ -11,15 +11,19 @@
  */
 
 export interface GreetingResponseDto {
-  /** @example "Îți doresc o zi minunată!" */
+  /** @example "Astazi este joi" */
   message: string;
+  /** @example "Bună dimineața!" */
+  slogan: string;
   /** @example "https://picsum.photos/seed/coffee/800/1200" */
   imageUrl: string;
 }
 
 export interface GreetingMessageResponseDto {
-  /** @example "Îți doresc o zi minunată!" */
+  /** @example "Astazi este joi" */
   message: string;
+  /** @example "Bună dimineața!" */
+  slogan: string;
 }
 
 export interface GreetingImageResponseDto {

@@ -6,7 +6,7 @@ import {
   TryAnotherText,
 } from "../app/index.styles";
 
-type Props = {
+type ActionButtonsProps = {
   swipe: () => void;
   loading: boolean;
   share: () => void;
@@ -22,7 +22,7 @@ export function ActionButtons({
   sharing,
   t,
   paddingBottom,
-}: Props) {
+}: ActionButtonsProps) {
   return (
     <Buttons style={{ paddingBottom }}>
       <TryAnotherButton onPress={swipe} disabled={loading}>

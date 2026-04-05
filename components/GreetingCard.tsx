@@ -15,20 +15,22 @@ import { CardFont } from "./CardFont";
 const OVERLAY_COLORS = ["rgba(0,0,0,0.15)", "rgba(0,0,0,0.55)"] as const;
 const OVERLAY_START = { x: 0, y: 0 };
 const OVERLAY_END = { x: 0, y: 1 };
+const cardViewStyle = { flex: 1, backgroundColor: "black" } as const;
 
 type Props = {
   cardStyle: AnimatedStyle<ViewStyle>;
 };
 
 export function GreetingCard({ cardStyle }: Props) {
-  const { image, changeFont, changeImage, changeColor } = useGreetingContext();
+  const { imageUrl, changeFont, changeSloganFont, changeImage, changeColor } =
+    useGreetingContext();
   const { cardRef } = useShareContext();
 
   return (
     <Animated.View style={cardStyle}>
       <CardFrame>
-        <View ref={cardRef} collapsable={false} style={{ flex: 1 }}>
-          <Card source={image} resizeMode="cover">
+        <View ref={cardRef} collapsable={false} style={cardViewStyle}>
+          <Card source={{ uri: imageUrl }} resizeMode="cover">
             <CardOverlay
               colors={OVERLAY_COLORS}
               start={OVERLAY_START}
@@ -51,6 +53,14 @@ export function GreetingCard({ cardStyle }: Props) {
 
         <CardIconButton onPress={changeFont}>
           <Ionicons name="text-outline" size={18} color="white" />
+        </CardIconButton>
+
+        <CardIconButton onPress={changeSloganFont}>
+          <Ionicons
+            name="text-outline"
+            size={14}
+            color="rgba(255,255,255,0.6)"
+          />
         </CardIconButton>
 
         <CardIconButton onPress={changeColor}>

@@ -1,47 +1,57 @@
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { useSharedValue } from "react-native-reanimated";
-import { scheduleOnRN } from "react-native-worklets";
 import { useGreetingContext } from "../context/GreetingContext";
-import { useDraggableText } from "../hooks/useDraggableText";
-import { Greeting } from "../app/index.styles";
+import { useTextElementState } from "../hooks/useTextElementState";
+import { DraggableText } from "./DraggableText";
+
+const SLOGAN_FONT_SIZE = 13;
+const SLOGAN_LINE_HEIGHT = 20;
 
 export function CardFont() {
-  const { text, font, fontSizeOffset, textColor, greetingAnimatedStyle, changeFontSize } =
-    useGreetingContext();
-  const { gesture, dragStyle } = useDraggableText();
+  const {
+    text,
+    slogan,
+    font,
+    sloganFont,
+    textColor,
+    greetingAnimatedStyle,
+    sloganAnimatedStyle,
+  } = useGreetingContext();
 
-  const prevScale = useSharedValue(1);
-
-  const pinchGesture = Gesture.Pinch()
-    .onStart(() => {
-      prevScale.value = 1;
-    })
-    .onUpdate((e) => {
-      const delta = (e.scale - prevScale.value) * 20;
-      if (Math.abs(delta) >= 1) {
-        prevScale.value = e.scale;
-        scheduleOnRN(changeFontSize, Math.round(delta));
-      }
-    });
-
-  const combinedGesture = Gesture.Simultaneous(gesture, pinchGesture);
+  const messageState = useTextElementState({
+    fontSize: font.fontSize,
+    lineHeight: font.lineHeight,
+  });
+  const sloganState = useTextElementState({
+    fontSize: SLOGAN_FONT_SIZE,
+    lineHeight: SLOGAN_LINE_HEIGHT,
+  });
 
   return (
-    <GestureDetector gesture={combinedGesture}>
-      <Animated.View style={dragStyle}>
-        <Animated.View style={greetingAnimatedStyle}>
-          <Greeting
-            style={{
-              ...font,
-              color: textColor,
-              fontSize: font.fontSize + fontSizeOffset,
-              lineHeight: font.lineHeight + fontSizeOffset,
-            }}
-          >
-            {text}
-          </Greeting>
-        </Animated.View>
-      </Animated.View>
-    </GestureDetector>
+    <>
+      <DraggableText
+        state={messageState}
+        style={{ ...font, color: textColor }}
+        animatedStyle={greetingAnimatedStyle}
+      >
+        {text}
+      </DraggableText>
+
+      {slogan ? (
+        <DraggableText
+          state={sloganState}
+          style={{
+            fontFamily: sloganFont.fontFamily,
+            fontSize: SLOGAN_FONT_SIZE,
+            lineHeight: SLOGAN_LINE_HEIGHT,
+            color: textColor,
+            letterSpacing: 1.2,
+            textAlign: "center",
+            textTransform: "uppercase",
+          }}
+          animatedStyle={sloganAnimatedStyle}
+        >
+          {slogan}
+        </DraggableText>
+      ) : null}
+    </>
   );
 }
