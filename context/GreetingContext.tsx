@@ -6,7 +6,6 @@ import {
   useState,
 } from "react";
 import { ViewStyle } from "react-native";
-import { scheduleOnRN } from "react-native-worklets";
 import {
   AnimatedStyle,
   useAnimatedStyle,
@@ -62,7 +61,7 @@ interface GreetingContextValue {
   imageUrl: string;
   loading: boolean;
   focusedBlockId: TextBlockId | null;
-  refreshCount: number;
+
   setFocusedBlockId: (id: TextBlockId | null) => void;
   cycleFocusedFont: () => void;
   cycleFocusedColor: () => void;
@@ -80,7 +79,6 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   });
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [refreshCount, setRefreshCount] = useState(0);
   const [colorIndexes, setColorIndexes] = useState<Record<TextBlockId, number>>(
     { slogan: 0, message: 0 },
   );
@@ -121,7 +119,6 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
       setImageUrl(data.imageUrl);
       setFontIndexes({ slogan: 0, message: 0 });
       setColorIndexes({ slogan: 0, message: 0 });
-      setRefreshCount((c) => c + 1);
     } finally {
       setLoading(false);
     }
@@ -131,21 +128,22 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     refreshGreeting();
   }, [refreshGreeting]);
 
-  const advanceFontForBlock = useCallback((id: TextBlockId) => {
-    setFontIndexes((prev) => ({
-      ...prev,
-      [id]: (prev[id] + 1) % FONTS.length,
-    }));
-  }, []);
+  const advanceFontForBlock = useCallback(
+    (id: TextBlockId) => {
+      setFontIndexes((prev) => ({
+        ...prev,
+        [id]: (prev[id] + 1) % FONTS.length,
+      }));
+      opacities[id].value = withTiming(1, { duration: FADE_DURATION });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sloganOpacity, messageOpacity],
+  );
 
   const cycleFontForBlock = useCallback(
     (id: TextBlockId) => {
-      const opacity = opacities[id];
-      opacity.value = withTiming(0, { duration: FADE_DURATION }, (finished) => {
-        if (!finished) return;
-        scheduleOnRN(() => advanceFontForBlock(id));
-        opacity.value = withTiming(1, { duration: FADE_DURATION });
-      });
+      opacities[id].value = withTiming(0, { duration: FADE_DURATION });
+      setTimeout(() => advanceFontForBlock(id), FADE_DURATION);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sloganOpacity, messageOpacity, advanceFontForBlock],
@@ -191,7 +189,6 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         imageUrl,
         loading,
         focusedBlockId,
-        refreshCount,
         setFocusedBlockId,
         cycleFocusedFont,
         cycleFocusedColor,

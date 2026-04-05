@@ -34,7 +34,7 @@ function TextBlockItem({ block, isSelected, onTap }: TextBlockItemProps) {
 }
 
 export function CardFont() {
-  const { textBlocks, focusedBlockId, refreshCount, setFocusedBlockId } =
+  const { textBlocks, focusedBlockId, setFocusedBlockId } =
     useGreetingContext();
 
   return (
@@ -46,7 +46,7 @@ export function CardFont() {
       {textBlocks.map((block) =>
         block.text ? (
           <TextBlockItem
-            key={`${block.id}-${refreshCount}`}
+            key={`${block.id}-${block.text}`}
             block={block}
             isSelected={focusedBlockId === block.id}
             onTap={() => setFocusedBlockId(block.id)}
