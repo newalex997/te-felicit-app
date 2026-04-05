@@ -9,9 +9,9 @@ import { ActionButtons } from "../components/ActionButtons";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
-  const { fetchGreeting, loading } = useGreetingContext();
+  const { refreshGreeting, loading } = useGreetingContext();
   const { share, sharing } = useShareContext();
-  const { cardStyle, swipe } = useCardSwipe(fetchGreeting);
+  const { cardStyle, swipe } = useCardSwipe(refreshGreeting);
   const { t } = useI18n();
 
   return (

@@ -50,6 +50,11 @@ const FONTS: FontEntry[] = [
   { fontFamily: "Inter_600SemiBold", fontSize: 18, lineHeight: 28 },
 ];
 
+const FONT_SIZE_MULTIPLIERS: Record<TextBlockId, number> = {
+  slogan: 2,
+  message: 1,
+};
+
 const FADE_DURATION = 180;
 
 interface GreetingContextValue {
@@ -57,27 +62,27 @@ interface GreetingContextValue {
   imageUrl: string;
   loading: boolean;
   focusedBlockId: TextBlockId | null;
-  fetchCount: number;
+  refreshCount: number;
   setFocusedBlockId: (id: TextBlockId | null) => void;
-  changeFocusedFont: () => void;
-  changeFocusedColor: () => void;
-  fetchGreeting: () => Promise<void>;
-  changeImage: () => void;
+  cycleFocusedFont: () => void;
+  cycleFocusedColor: () => void;
+  clearFocusedText: () => void;
+  refreshGreeting: () => Promise<void>;
+  refreshImage: () => void;
 }
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
 
 export function GreetingProvider({ children }: { children: React.ReactNode }) {
-  const [text, setText] = useState("");
-  const [slogan, setSlogan] = useState("");
+  const [texts, setTexts] = useState<Record<TextBlockId, string>>({
+    slogan: "",
+    message: "",
+  });
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [fetchCount, setFetchCount] = useState(0);
+  const [refreshCount, setRefreshCount] = useState(0);
   const [colorIndexes, setColorIndexes] = useState<Record<TextBlockId, number>>(
-    {
-      slogan: 0,
-      message: 0,
-    },
+    { slogan: 0, message: 0 },
   );
   const [focusedBlockId, setFocusedBlockId] = useState<TextBlockId | null>(
     null,
@@ -90,24 +95,10 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const sloganOpacity = useSharedValue(1);
   const messageOpacity = useSharedValue(1);
 
-  const fetchGreeting = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await greetingApi.getGreeting();
-      setText(data.message);
-      setSlogan(data.slogan);
-      setImageUrl(data.imageUrl);
-      setFontIndexes({ slogan: 0, message: 0 });
-      setColorIndexes({ slogan: 0, message: 0 });
-      setFetchCount((c) => c + 1);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchGreeting();
-  }, [fetchGreeting]);
+  const opacities: Record<TextBlockId, typeof sloganOpacity> = {
+    slogan: sloganOpacity,
+    message: messageOpacity,
+  };
 
   const sloganAnimatedStyle = useAnimatedStyle(() => ({
     opacity: sloganOpacity.value,
@@ -117,43 +108,54 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     opacity: messageOpacity.value,
   }));
 
-  const advanceSloganFont = useCallback(() => {
+  const animatedStyles: Record<TextBlockId, AnimatedStyle<ViewStyle>> = {
+    slogan: sloganAnimatedStyle,
+    message: messageAnimatedStyle,
+  };
+
+  const refreshGreeting = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await greetingApi.getGreeting();
+      setTexts({ slogan: data.slogan, message: data.message });
+      setImageUrl(data.imageUrl);
+      setFontIndexes({ slogan: 0, message: 0 });
+      setColorIndexes({ slogan: 0, message: 0 });
+      setRefreshCount((c) => c + 1);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshGreeting();
+  }, [refreshGreeting]);
+
+  const advanceFontForBlock = useCallback((id: TextBlockId) => {
     setFontIndexes((prev) => ({
       ...prev,
-      slogan: (prev.slogan + 1) % FONTS.length,
+      [id]: (prev[id] + 1) % FONTS.length,
     }));
   }, []);
 
-  const advanceMessageFont = useCallback(() => {
-    setFontIndexes((prev) => ({
-      ...prev,
-      message: (prev.message + 1) % FONTS.length,
-    }));
-  }, []);
-
-  const changeFont = useCallback(
+  const cycleFontForBlock = useCallback(
     (id: TextBlockId) => {
-      const opacity = id === "slogan" ? sloganOpacity : messageOpacity;
-      const advance = id === "slogan" ? advanceSloganFont : advanceMessageFont;
+      const opacity = opacities[id];
       opacity.value = withTiming(0, { duration: FADE_DURATION }, (finished) => {
         if (!finished) return;
-        scheduleOnRN(advance);
+        scheduleOnRN(() => advanceFontForBlock(id));
         opacity.value = withTiming(1, { duration: FADE_DURATION });
       });
     },
-    [sloganOpacity, messageOpacity, advanceSloganFont, advanceMessageFont],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sloganOpacity, messageOpacity, advanceFontForBlock],
   );
 
-  const changeFocusedFont = useCallback(() => {
-    if (focusedBlockId) changeFont(focusedBlockId);
-  }, [focusedBlockId, changeFont]);
+  const cycleFocusedFont = useCallback(() => {
+    if (focusedBlockId) cycleFontForBlock(focusedBlockId);
+  }, [focusedBlockId, cycleFontForBlock]);
 
-  const changeImage = useCallback(async () => {
-    const data = await greetingApi.getImage();
-    setImageUrl(data.imageUrl);
-  }, []);
-
-  const changeFocusedColor = useCallback(() => {
+  const cycleFocusedColor = useCallback(() => {
     if (!focusedBlockId) return;
     setColorIndexes((prev) => ({
       ...prev,
@@ -161,24 +163,26 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     }));
   }, [focusedBlockId]);
 
-  const textBlocks: TextBlock[] = [
-    {
-      id: "slogan",
-      text: slogan,
-      font: FONTS[fontIndexes.slogan],
-      color: TEXT_COLORS[colorIndexes.slogan],
-      fontSizeMultiplier: 2,
-      animatedStyle: sloganAnimatedStyle,
-    },
-    {
-      id: "message",
-      text,
-      font: FONTS[fontIndexes.message],
-      color: TEXT_COLORS[colorIndexes.message],
-      fontSizeMultiplier: 1,
-      animatedStyle: messageAnimatedStyle,
-    },
-  ];
+  const clearFocusedText = useCallback(() => {
+    if (!focusedBlockId) return;
+    setTexts((prev) => ({ ...prev, [focusedBlockId]: "" }));
+  }, [focusedBlockId]);
+
+  const refreshImage = useCallback(async () => {
+    const data = await greetingApi.getImage();
+    setImageUrl(data.imageUrl);
+  }, []);
+
+  const textBlocks: TextBlock[] = (
+    ["slogan", "message"] as TextBlockId[]
+  ).map((id) => ({
+    id,
+    text: texts[id],
+    font: FONTS[fontIndexes[id]],
+    color: TEXT_COLORS[colorIndexes[id]],
+    fontSizeMultiplier: FONT_SIZE_MULTIPLIERS[id],
+    animatedStyle: animatedStyles[id],
+  }));
 
   return (
     <GreetingContext.Provider
@@ -187,12 +191,13 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         imageUrl,
         loading,
         focusedBlockId,
-        fetchCount,
+        refreshCount,
         setFocusedBlockId,
-        changeFocusedFont,
-        changeFocusedColor,
-        fetchGreeting,
-        changeImage,
+        cycleFocusedFont,
+        cycleFocusedColor,
+        clearFocusedText,
+        refreshGreeting,
+        refreshImage,
       }}
     >
       {children}

@@ -7,7 +7,7 @@ const GRADIENT_START = { x: 0, y: 0 };
 const GRADIENT_END = { x: 0, y: 1 };
 
 export function CardFontButtons() {
-  const { focusedBlockId, changeFocusedFont, changeFocusedColor } =
+  const { focusedBlockId, cycleFocusedFont, cycleFocusedColor, clearFocusedText } =
     useGreetingContext();
 
   if (!focusedBlockId) return null;
@@ -18,12 +18,16 @@ export function CardFontButtons() {
       start={GRADIENT_START}
       end={GRADIENT_END}
     >
-      <CardIconButton onPress={changeFocusedFont}>
+      <CardIconButton onPress={cycleFocusedFont}>
         <Ionicons name="text-outline" size={18} color="white" />
       </CardIconButton>
 
-      <CardIconButton onPress={changeFocusedColor}>
+      <CardIconButton onPress={cycleFocusedColor}>
         <Ionicons name="color-palette-outline" size={18} color="white" />
+      </CardIconButton>
+
+      <CardIconButton onPress={clearFocusedText}>
+        <Ionicons name="trash-outline" size={18} color="white" />
       </CardIconButton>
     </CardButtonGroup>
   );

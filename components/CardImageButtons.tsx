@@ -7,7 +7,7 @@ const GRADIENT_START = { x: 0, y: 0 };
 const GRADIENT_END = { x: 0, y: 1 };
 
 export function CardImageButtons() {
-  const { changeImage } = useGreetingContext();
+  const { refreshImage } = useGreetingContext();
 
   return (
     <CardButtonGroup
@@ -15,7 +15,7 @@ export function CardImageButtons() {
       start={GRADIENT_START}
       end={GRADIENT_END}
     >
-      <CardIconButton onPress={changeImage}>
+      <CardIconButton onPress={refreshImage}>
         <Ionicons name="image-outline" size={18} color="white" />
       </CardIconButton>
     </CardButtonGroup>
