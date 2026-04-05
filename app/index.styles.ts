@@ -26,10 +26,14 @@ export const CardOverlay = styled(LinearGradient)`
   padding: ${({ theme }) => theme.space.xxl}px;
 `;
 
-export const CardButtons = styled(LinearGradient)`
+export const CardButtonsContainer = styled.View`
   position: absolute;
   top: ${({ theme }) => 60 + theme.space.md}px;
   right: ${({ theme }) => theme.space.lg + theme.space.md}px;
+  gap: ${({ theme }) => theme.space.sm}px;
+`;
+
+export const CardButtonGroup = styled(LinearGradient)`
   gap: ${({ theme }) => theme.space.sm}px;
   padding: ${({ theme }) => theme.space.sm}px;
   border-radius: ${({ theme }) => theme.radii.lg}px;

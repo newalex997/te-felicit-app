@@ -1,15 +1,15 @@
-import { Ionicons } from "@expo/vector-icons";
 import { View, ViewStyle } from "react-native";
 import Animated, { AnimatedStyle } from "react-native-reanimated";
 import { useGreetingContext } from "../context/GreetingContext";
 import { useShareContext } from "../context/ShareContext";
 import {
   Card,
-  CardButtons,
+  CardButtonsContainer,
   CardFrame,
-  CardIconButton,
   CardOverlay,
 } from "../app/index.styles";
+import { CardFontButtons } from "./CardFont/CardFontButtons";
+import { CardImageButtons } from "./CardImageButtons";
 import { CardFont } from "./CardFont";
 
 const OVERLAY_COLORS = ["rgba(0,0,0,0.15)", "rgba(0,0,0,0.55)"] as const;
@@ -22,8 +22,7 @@ type Props = {
 };
 
 export function GreetingCard({ cardStyle }: Props) {
-  const { imageUrl, changeFont, changeSloganFont, changeImage, changeColor } =
-    useGreetingContext();
+  const { imageUrl } = useGreetingContext();
   const { cardRef } = useShareContext();
 
   return (
@@ -42,31 +41,10 @@ export function GreetingCard({ cardStyle }: Props) {
         </View>
       </CardFrame>
 
-      <CardButtons
-        colors={["rgba(0,0,0,0.45)", "rgba(0,0,0,0.1)"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-      >
-        <CardIconButton onPress={changeImage}>
-          <Ionicons name="image-outline" size={18} color="white" />
-        </CardIconButton>
-
-        <CardIconButton onPress={changeFont}>
-          <Ionicons name="text-outline" size={18} color="white" />
-        </CardIconButton>
-
-        <CardIconButton onPress={changeSloganFont}>
-          <Ionicons
-            name="text-outline"
-            size={14}
-            color="rgba(255,255,255,0.6)"
-          />
-        </CardIconButton>
-
-        <CardIconButton onPress={changeColor}>
-          <Ionicons name="color-palette-outline" size={18} color="white" />
-        </CardIconButton>
-      </CardButtons>
+      <CardButtonsContainer>
+        <CardImageButtons />
+        <CardFontButtons />
+      </CardButtonsContainer>
     </Animated.View>
   );
 }

@@ -21,6 +21,17 @@ type FontEntry = {
   lineHeight: number;
 };
 
+export type TextBlockId = "slogan" | "message";
+
+export type TextBlock = {
+  id: TextBlockId;
+  text: string;
+  font: FontEntry;
+  color: string;
+  fontSizeMultiplier: number;
+  animatedStyle: AnimatedStyle<ViewStyle>;
+};
+
 const TEXT_COLORS = [
   "#FFFFFF",
   "#FFE066",
@@ -42,20 +53,16 @@ const FONTS: FontEntry[] = [
 const FADE_DURATION = 180;
 
 interface GreetingContextValue {
-  text: string;
-  slogan: string;
+  textBlocks: TextBlock[];
   imageUrl: string;
   loading: boolean;
-  font: FontEntry;
-  sloganFont: FontEntry;
-  textColor: string;
-  greetingAnimatedStyle: AnimatedStyle<ViewStyle>;
-  sloganAnimatedStyle: AnimatedStyle<ViewStyle>;
+  focusedBlockId: TextBlockId | null;
+  fetchCount: number;
+  setFocusedBlockId: (id: TextBlockId | null) => void;
+  changeFocusedFont: () => void;
+  changeFocusedColor: () => void;
   fetchGreeting: () => Promise<void>;
-  changeFont: () => void;
-  changeSloganFont: () => void;
   changeImage: () => void;
-  changeColor: () => void;
 }
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
@@ -65,12 +72,23 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const [slogan, setSlogan] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [fontIndex, setFontIndex] = useState(0);
-  const [sloganFontIndex, setSloganFontIndex] = useState(0);
-  const [colorIndex, setColorIndex] = useState(0);
+  const [fetchCount, setFetchCount] = useState(0);
+  const [colorIndexes, setColorIndexes] = useState<Record<TextBlockId, number>>(
+    {
+      slogan: 0,
+      message: 0,
+    },
+  );
+  const [focusedBlockId, setFocusedBlockId] = useState<TextBlockId | null>(
+    null,
+  );
+  const [fontIndexes, setFontIndexes] = useState<Record<TextBlockId, number>>({
+    slogan: 0,
+    message: 0,
+  });
 
-  const opacity = useSharedValue(1);
   const sloganOpacity = useSharedValue(1);
+  const messageOpacity = useSharedValue(1);
 
   const fetchGreeting = useCallback(async () => {
     setLoading(true);
@@ -79,6 +97,9 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
       setText(data.message);
       setSlogan(data.slogan);
       setImageUrl(data.imageUrl);
+      setFontIndexes({ slogan: 0, message: 0 });
+      setColorIndexes({ slogan: 0, message: 0 });
+      setFetchCount((c) => c + 1);
     } finally {
       setLoading(false);
     }
@@ -88,68 +109,90 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     fetchGreeting();
   }, [fetchGreeting]);
 
-  const greetingAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
-
   const sloganAnimatedStyle = useAnimatedStyle(() => ({
     opacity: sloganOpacity.value,
   }));
 
-  const advanceFont = useCallback(() => {
-    setFontIndex((i) => (i + 1) % FONTS.length);
-  }, []);
+  const messageAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: messageOpacity.value,
+  }));
 
   const advanceSloganFont = useCallback(() => {
-    setSloganFontIndex((i) => (i + 1) % FONTS.length);
+    setFontIndexes((prev) => ({
+      ...prev,
+      slogan: (prev.slogan + 1) % FONTS.length,
+    }));
   }, []);
 
-  const changeFont = useCallback(() => {
-    opacity.value = withTiming(0, { duration: FADE_DURATION }, (finished) => {
-      if (!finished) return;
-      scheduleOnRN(advanceFont);
-      opacity.value = withTiming(1, { duration: FADE_DURATION });
-    });
-  }, [advanceFont, opacity]);
+  const advanceMessageFont = useCallback(() => {
+    setFontIndexes((prev) => ({
+      ...prev,
+      message: (prev.message + 1) % FONTS.length,
+    }));
+  }, []);
 
-  const changeSloganFont = useCallback(() => {
-    sloganOpacity.value = withTiming(
-      0,
-      { duration: FADE_DURATION },
-      (finished) => {
+  const changeFont = useCallback(
+    (id: TextBlockId) => {
+      const opacity = id === "slogan" ? sloganOpacity : messageOpacity;
+      const advance = id === "slogan" ? advanceSloganFont : advanceMessageFont;
+      opacity.value = withTiming(0, { duration: FADE_DURATION }, (finished) => {
         if (!finished) return;
-        scheduleOnRN(advanceSloganFont);
-        sloganOpacity.value = withTiming(1, { duration: FADE_DURATION });
-      },
-    );
-  }, [advanceSloganFont, sloganOpacity]);
+        scheduleOnRN(advance);
+        opacity.value = withTiming(1, { duration: FADE_DURATION });
+      });
+    },
+    [sloganOpacity, messageOpacity, advanceSloganFont, advanceMessageFont],
+  );
+
+  const changeFocusedFont = useCallback(() => {
+    if (focusedBlockId) changeFont(focusedBlockId);
+  }, [focusedBlockId, changeFont]);
 
   const changeImage = useCallback(async () => {
     const data = await greetingApi.getImage();
     setImageUrl(data.imageUrl);
   }, []);
 
-  const changeColor = useCallback(() => {
-    setColorIndex((i) => (i + 1) % TEXT_COLORS.length);
-  }, []);
+  const changeFocusedColor = useCallback(() => {
+    if (!focusedBlockId) return;
+    setColorIndexes((prev) => ({
+      ...prev,
+      [focusedBlockId]: (prev[focusedBlockId] + 1) % TEXT_COLORS.length,
+    }));
+  }, [focusedBlockId]);
+
+  const textBlocks: TextBlock[] = [
+    {
+      id: "slogan",
+      text: slogan,
+      font: FONTS[fontIndexes.slogan],
+      color: TEXT_COLORS[colorIndexes.slogan],
+      fontSizeMultiplier: 2,
+      animatedStyle: sloganAnimatedStyle,
+    },
+    {
+      id: "message",
+      text,
+      font: FONTS[fontIndexes.message],
+      color: TEXT_COLORS[colorIndexes.message],
+      fontSizeMultiplier: 1,
+      animatedStyle: messageAnimatedStyle,
+    },
+  ];
 
   return (
     <GreetingContext.Provider
       value={{
-        text,
-        slogan,
+        textBlocks,
         imageUrl,
         loading,
-        font: FONTS[fontIndex],
-        sloganFont: FONTS[sloganFontIndex],
-        textColor: TEXT_COLORS[colorIndex],
-        greetingAnimatedStyle,
-        sloganAnimatedStyle,
+        focusedBlockId,
+        fetchCount,
+        setFocusedBlockId,
+        changeFocusedFont,
+        changeFocusedColor,
         fetchGreeting,
-        changeFont,
-        changeSloganFont,
         changeImage,
-        changeColor,
       }}
     >
       {children}
