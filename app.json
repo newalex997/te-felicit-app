@@ -1,17 +1,22 @@
 {
   "expo": {
     "name": "Mesaje din Suflet",
-    "slug": "mesaje-din-suflet",
+    "slug": "mesajedinsuflet",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mesaje-din-suflet",
+    "scheme": "mesajedinsuflet",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pipedigital.mesajedinsuflet",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.pipedigital.mesajedinsuflet",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -39,6 +44,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "56e76639-434c-426e-b425-9ff2872fbb6b"
+      }
+    },
+    "owner": "alexeiapostol"
   }
 }

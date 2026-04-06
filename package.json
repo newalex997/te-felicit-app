@@ -1,5 +1,5 @@
 {
-  "name": "mesaje-din-suflet",
+  "name": "mesajedinsuflet",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -9,7 +9,12 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "generate:api": "node ./scripts/generate-api.js"
+    "generate:api": "node ./scripts/generate-api.js",
+    "submit:ios": "eas submit --platform ios",
+    "submit:android": "eas submit --platform android",
+    "build:ios": "eas build --platform ios",
+    "build:android": "eas build -p android --local",
+    "build:android:apk": "eas build -p android --local --profile preview"
   },
   "dependencies": {
     "@expo-google-fonts/dancing-script": "^0.4.2",
