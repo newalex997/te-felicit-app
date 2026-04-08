@@ -37,28 +37,21 @@ function TextBlockItem({ block, isSelected, onTap }: TextBlockItemProps) {
   });
 
   return (
-    <View
-      style={[
-        StyleSheet.absoluteFill,
-        getPositionContainerStyle(block.position),
-      ]}
+    <DraggableText
+      state={state}
+      style={{
+        fontFamily: block.font.fontFamily,
+        fontSize: block.fontSize,
+        lineHeight: block.lineHeight,
+        color: block.color,
+        textAlign: "center",
+      }}
+      animatedStyle={block.animatedStyle}
+      isSelected={isSelected}
+      onTap={onTap}
     >
-      <DraggableText
-        state={state}
-        style={{
-          fontFamily: block.font.fontFamily,
-          fontSize: block.fontSize,
-          lineHeight: block.lineHeight,
-          color: block.color,
-          textAlign: "center",
-        }}
-        animatedStyle={block.animatedStyle}
-        isSelected={isSelected}
-        onTap={onTap}
-      >
-        {block.text}
-      </DraggableText>
-    </View>
+      {block.text}
+    </DraggableText>
   );
 }
 
@@ -66,22 +59,43 @@ export function CardFont() {
   const { textBlocks, focusedBlockId, setFocusedBlockId } =
     useGreetingContext();
 
+  const visibleBlocks = textBlocks.filter((b) => b.text);
+
+  const positionGroups = visibleBlocks.reduce<
+    Map<string, typeof visibleBlocks>
+  >((map, block) => {
+    const key = block.position;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(block);
+    return map;
+  }, new Map());
+
   return (
     <View style={styles.container}>
       <Pressable
         style={StyleSheet.absoluteFill}
         onPress={() => setFocusedBlockId(null)}
       />
-      {textBlocks.map((block) =>
-        block.text ? (
-          <TextBlockItem
-            key={`${block.id}-${block.text}`}
-            block={block}
-            isSelected={focusedBlockId === block.id}
-            onTap={() => setFocusedBlockId(block.id)}
-          />
-        ) : null,
-      )}
+      {Array.from(positionGroups.entries()).map(([position, blocks]) => (
+        <View
+          key={position}
+          style={[
+            StyleSheet.absoluteFill,
+            getPositionContainerStyle(
+              position as TextBlockConfigDto["position"],
+            ),
+          ]}
+        >
+          {blocks.map((block) => (
+            <TextBlockItem
+              key={`${block.id}-${block.text}`}
+              block={block}
+              isSelected={focusedBlockId === block.id}
+              onTap={() => setFocusedBlockId(block.id)}
+            />
+          ))}
+        </View>
+      ))}
     </View>
   );
 }

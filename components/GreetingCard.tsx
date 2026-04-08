@@ -7,7 +7,7 @@ import {
   CardButtonsContainer,
   CardFrame,
   CardOverlay,
-} from "../app/index.styles";
+} from "../styles/index.styles";
 import { CardFontButtons } from "./CardFont/CardFontButtons";
 import { CardImageButtons } from "./CardImageButtons";
 import { CardFont } from "./CardFont";

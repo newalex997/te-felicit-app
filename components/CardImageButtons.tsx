@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useGreetingContext } from "../context/GreetingContext";
-import { CardButtonGroup, CardIconButton } from "../app/index.styles";
+import { CardButtonGroup, CardIconButton } from "../styles/index.styles";
 
 const GRADIENT_COLORS = ["rgba(0,0,0,0.45)", "rgba(0,0,0,0.1)"] as const;
 const GRADIENT_START = { x: 0, y: 0 };

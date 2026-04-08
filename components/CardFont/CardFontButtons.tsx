@@ -1,18 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useGreetingContext } from "../../context/GreetingContext";
-import { CardButtonGroup, CardIconButton } from "../../app/index.styles";
+import { CardButtonGroup, CardIconButton } from "../../styles/index.styles";
 
 const GRADIENT_COLORS = ["rgba(0,0,0,0.75)", "rgba(0,0,0,0.3)"] as const;
 const GRADIENT_START = { x: 0, y: 0 };
 const GRADIENT_END = { x: 0, y: 1 };
 
 export function CardFontButtons() {
-  const {
-    focusedBlockId,
-    cycleBlockFont,
-    cycleBlockColor,
-    clearBlock,
-  } = useGreetingContext();
+  const { focusedBlockId, cycleBlockFont, cycleBlockColor, clearBlock } =
+    useGreetingContext();
 
   if (!focusedBlockId) return null;
 

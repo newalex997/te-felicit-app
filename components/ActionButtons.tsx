@@ -4,7 +4,7 @@ import {
   ShareText,
   TryAnotherButton,
   TryAnotherText,
-} from "../app/index.styles";
+} from "../styles/index.styles";
 
 type ActionButtonsProps = {
   swipe: () => void;

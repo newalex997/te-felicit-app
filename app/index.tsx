@@ -3,7 +3,7 @@ import { useGreetingContext } from "../context/GreetingContext";
 import { useShareContext } from "../context/ShareContext";
 import { useI18n } from "../context/I18nContext";
 import { useCardSwipe } from "../hooks/useCardSwipe";
-import { Container } from "./index.styles";
+import { Container } from "../styles/index.styles";
 import { GreetingCard } from "../components/GreetingCard";
 import { ActionButtons } from "../components/ActionButtons";
 
