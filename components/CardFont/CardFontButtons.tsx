@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useGreetingContext } from "../../context/GreetingContext";
 import { CardButtonGroup, CardIconButton } from "../../styles/index.styles";
+import { ColorCircleIcon } from "./ColorCircleIcon";
 
 const GRADIENT_COLORS = ["rgba(0,0,0,0.75)", "rgba(0,0,0,0.3)"] as const;
 const GRADIENT_START = { x: 0, y: 0 };
@@ -23,7 +24,7 @@ export function CardFontButtons() {
       </CardIconButton>
 
       <CardIconButton onPress={cycleBlockColor}>
-        <Ionicons name="color-palette-outline" size={18} color="white" />
+        <ColorCircleIcon />
       </CardIconButton>
 
       <CardIconButton onPress={clearBlock}>

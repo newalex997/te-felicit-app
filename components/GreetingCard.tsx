@@ -11,6 +11,7 @@ import {
 import { CardFontButtons } from "./CardFont/CardFontButtons";
 import { CardImageButtons } from "./CardImageButtons";
 import { CardFont } from "./CardFont";
+import { Watermark } from "./Watermark";
 
 const OVERLAY_COLORS = ["rgba(0,0,0,0.15)", "rgba(0,0,0,0.55)"] as const;
 const OVERLAY_START = { x: 0, y: 0 };
@@ -36,6 +37,7 @@ export function GreetingCard({ cardStyle }: Props) {
               end={OVERLAY_END}
             >
               <CardFont />
+              <Watermark />
             </CardOverlay>
           </Card>
         </View>

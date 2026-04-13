@@ -21,14 +21,35 @@ export const TEXT_COLORS = [
   "#A8EDEA",
   "#C3B1E1",
   "#FFDAB9",
+  "#000000",
+  "#FF6B6B",
+  "#FF9F43",
+  "#6BCB77",
+  "#4D96FF",
+  "#BF5FFF",
+  "#F8CDDA",
+  "#B8E9C0",
+  "#D4A5A5",
+  "#A0C4FF",
 ] as const;
 
 export const FONTS: FontEntry[] = [
   { fontFamily: "GreatVibes_400Regular", fontSize: 32, lineHeight: 44 },
+  { fontFamily: "DancingScript_400Regular", fontSize: 30, lineHeight: 42 },
   { fontFamily: "DancingScript_700Bold", fontSize: 30, lineHeight: 42 },
+  { fontFamily: "Lora_400Regular", fontSize: 24, lineHeight: 36 },
+  { fontFamily: "Lora_700Bold", fontSize: 24, lineHeight: 36 },
+  { fontFamily: "CormorantGaramond_300Light", fontSize: 28, lineHeight: 40 },
+  { fontFamily: "CormorantGaramond_600SemiBold", fontSize: 26, lineHeight: 38 },
   { fontFamily: "PlayfairDisplay_400Regular", fontSize: 26, lineHeight: 38 },
-  { fontFamily: "Sacramento_400Regular", fontSize: 36, lineHeight: 50 },
+  {
+    fontFamily: "PlayfairDisplay_400Regular_Italic",
+    fontSize: 26,
+    lineHeight: 38,
+  },
+  { fontFamily: "PlayfairDisplay_700Bold", fontSize: 24, lineHeight: 36 },
   { fontFamily: "Pacifico_400Regular", fontSize: 24, lineHeight: 36 },
+  { fontFamily: "Inter_400Regular", fontSize: 18, lineHeight: 28 },
   { fontFamily: "Inter_600SemiBold", fontSize: 18, lineHeight: 28 },
 ];
 

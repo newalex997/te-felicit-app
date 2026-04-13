@@ -17,12 +17,13 @@
     "build:android:apk": "eas build -p android --local --profile preview"
   },
   "dependencies": {
+    "@expo-google-fonts/cormorant-garamond": "^0.4.1",
     "@expo-google-fonts/dancing-script": "^0.4.2",
     "@expo-google-fonts/great-vibes": "^0.4.1",
     "@expo-google-fonts/inter": "^0.4.2",
+    "@expo-google-fonts/lora": "^0.4.2",
     "@expo-google-fonts/pacifico": "^0.4.1",
     "@expo-google-fonts/playfair-display": "^0.4.2",
-    "@expo-google-fonts/sacramento": "^0.4.1",
     "@expo/vector-icons": "^15.0.3",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
