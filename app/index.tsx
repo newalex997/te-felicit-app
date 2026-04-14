@@ -6,18 +6,18 @@ import { useCardSwipe } from "../hooks/useCardSwipe";
 import { Container } from "../styles/index.styles";
 import { GreetingCard } from "../components/GreetingCard";
 import { ActionButtons } from "../components/ActionButtons";
-import { HolidayPicker } from "../components/HolidayPicker";
+import { MoodPicker } from "../components/MoodPicker";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
-  const { refreshGreeting, loading } = useGreetingContext();
+  const { refreshGreeting, loading, setMood } = useGreetingContext();
   const { share, sharing } = useShareContext();
   const { cardStyle, swipe } = useCardSwipe(refreshGreeting);
   const { t } = useI18n();
 
   return (
     <Container>
-      <HolidayPicker />
+      <MoodPicker onSelect={(id) => setMood(id === "all" ? undefined : id)} />
       <GreetingCard cardStyle={cardStyle} />
       <ActionButtons
         swipe={swipe}

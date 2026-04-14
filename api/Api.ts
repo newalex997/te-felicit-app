@@ -61,3 +61,18 @@ export interface GreetingImageResponseDto {
   /** @example "https://picsum.photos/seed/coffee/800/1200" */
   imageUrl: string;
 }
+
+export interface MoodOptionDto {
+  /** @example "romantic" */
+  id: string;
+  /** @example "Romantic" */
+  label: string;
+  /** @example "❤️" */
+  emoji: string;
+  /** @example ["#e8175d","#ff6b6b"] */
+  gradient: string[];
+}
+
+export interface MoodOptionsResponseDto {
+  moods: MoodOptionDto[];
+}
