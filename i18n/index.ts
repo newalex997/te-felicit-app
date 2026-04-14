@@ -4,14 +4,12 @@ import * as Localization from "expo-localization";
 import en from "./locales/en.json";
 import ro from "./locales/ro.json";
 import ru from "./locales/ru.json";
-import uk from "./locales/uk.json";
 import it from "./locales/it.json";
-import fr from "./locales/fr.json";
 
-export const SUPPORTED_LOCALES = ["en", "ro", "ru", "uk", "it", "fr"] as const;
+export const SUPPORTED_LOCALES = ["en", "ro", "ru", "it"] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
-export const i18n = new I18n({ en, ro, ru, uk, it, fr });
+export const i18n = new I18n({ en, ro, ru, it });
 i18n.enableFallback = true;
 i18n.defaultLocale = "en";
 

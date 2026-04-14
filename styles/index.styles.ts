@@ -10,7 +10,7 @@ export const Container = styled.View`
 export const CardFrame = styled.View`
   flex: 1;
   margin: ${({ theme }) => theme.space.lg}px;
-  margin-top: 60px;
+  margin-top: ${({ theme }) => theme.space.lg}px;
   border-radius: ${({ theme }) => theme.radii.lg}px;
   overflow: hidden;
 `;
@@ -28,7 +28,7 @@ export const CardOverlay = styled(LinearGradient)`
 
 export const CardButtonsContainer = styled.View`
   position: absolute;
-  top: ${({ theme }) => 60 + theme.space.md}px;
+  top: ${({ theme }) => theme.space.lg + theme.space.md}px;
   right: ${({ theme }) => theme.space.lg + theme.space.md}px;
   gap: ${({ theme }) => theme.space.sm}px;
 `;

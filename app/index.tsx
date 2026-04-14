@@ -6,6 +6,7 @@ import { useCardSwipe } from "../hooks/useCardSwipe";
 import { Container } from "../styles/index.styles";
 import { GreetingCard } from "../components/GreetingCard";
 import { ActionButtons } from "../components/ActionButtons";
+import { HolidayPicker } from "../components/HolidayPicker";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
@@ -16,6 +17,7 @@ export default function Index() {
 
   return (
     <Container>
+      <HolidayPicker />
       <GreetingCard cardStyle={cardStyle} />
       <ActionButtons
         swipe={swipe}
