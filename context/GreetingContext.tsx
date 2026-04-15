@@ -7,7 +7,7 @@ import {
 } from "react";
 import { greetingApi } from "../api/greeting";
 import { TextBlockConfigDto } from "../api/Api";
-import { FontEntry, TextBlockState, useTextBlockState } from "./useTextBlockState";
+import { FontEntry, TextBlockState, TextEffect, useTextBlockState } from "./useTextBlockState";
 
 export type TextBlockId = "slogan" | "message";
 
@@ -18,6 +18,9 @@ export type TextBlock = {
   fontSize: number;
   lineHeight: number;
   color: string;
+  textEffect: TextEffect;
+  textEffectStyle: TextBlockState["textEffectStyle"];
+  strokeColor: string | undefined;
   position: TextBlockConfigDto["position"];
   animatedStyle: TextBlockState["animatedStyle"];
 };
@@ -30,6 +33,7 @@ interface GreetingContextValue {
   setFocusedBlockId: (id: TextBlockId | null) => void;
   cycleBlockFont: () => void;
   cycleBlockColor: () => void;
+  cycleBlockTextEffect: () => void;
   clearBlock: () => void;
   refreshGreeting: () => Promise<void>;
   refreshImage: () => void;
@@ -84,6 +88,11 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     else if (focusedBlockId === "message") messageState.cycleColor();
   }, [focusedBlockId, sloganState, messageState]);
 
+  const cycleBlockTextEffect = useCallback(() => {
+    if (focusedBlockId === "slogan") sloganState.cycleTextEffect();
+    else if (focusedBlockId === "message") messageState.cycleTextEffect();
+  }, [focusedBlockId, sloganState, messageState]);
+
   const clearBlock = useCallback(() => {
     if (focusedBlockId) setTexts((prev) => ({ ...prev, [focusedBlockId]: "" }));
   }, [focusedBlockId]);
@@ -104,6 +113,9 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     fontSize: state.fontSize,
     lineHeight: state.lineHeight,
     color: state.color,
+    textEffect: state.textEffect,
+    textEffectStyle: state.textEffectStyle,
+    strokeColor: state.strokeColor,
     position: config?.position ?? "center",
     animatedStyle: state.animatedStyle,
   });
@@ -123,6 +135,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         setFocusedBlockId,
         cycleBlockFont,
         cycleBlockColor,
+        cycleBlockTextEffect,
         clearBlock,
         refreshGreeting,
         refreshImage,

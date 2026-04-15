@@ -45,10 +45,13 @@ function TextBlockItem({ block, isSelected, onTap }: TextBlockItemProps) {
         lineHeight: block.lineHeight,
         color: block.color,
         textAlign: "center",
+        ...block.textEffectStyle,
       }}
       animatedStyle={block.animatedStyle}
       isSelected={isSelected}
       onTap={onTap}
+      textEffect={block.textEffect}
+      strokeColor={block.strokeColor}
     >
       {block.text}
     </DraggableText>

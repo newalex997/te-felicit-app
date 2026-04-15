@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { ViewStyle } from "react-native";
+import { TextStyle, ViewStyle } from "react-native";
 import {
   AnimatedStyle,
   useAnimatedStyle,
@@ -53,6 +53,39 @@ export const FONTS: FontEntry[] = [
   { fontFamily: "Inter_600SemiBold", fontSize: 18, lineHeight: 28 },
 ];
 
+export type TextEffect = "none" | "shadow" | "outline" | "border";
+
+function getContrastColor(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  return luminance > 0.45 ? "#000000" : "#FFFFFF";
+}
+
+export function getTextStrokeColor(effect: TextEffect, color: string): string | undefined {
+  if (effect !== "border") return undefined;
+  return getContrastColor(color);
+}
+
+function computeTextEffectStyle(effect: TextEffect, color: string): TextStyle {
+  if (effect === "none" || effect === "border") return {};
+  const contrastColor = getContrastColor(color);
+  if (effect === "shadow") {
+    return {
+      textShadowColor: contrastColor,
+      textShadowOffset: { width: 2, height: 3 },
+      textShadowRadius: 4,
+    };
+  }
+  // outline — simulated via tight multi-directional glow
+  return {
+    textShadowColor: contrastColor,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
+  };
+}
+
 const FADE_DURATION = 180;
 const LINE_HEIGHT_RATIO = 1.4;
 
@@ -60,6 +93,9 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
   const [fontIndex, setFontIndex] = useState(0);
   const [color, setColor] = useState<string>(
     initialConfig?.color ?? TEXT_COLORS[0],
+  );
+  const [textEffect, setTextEffect] = useState<TextEffect>(
+    initialConfig?.textEffect ?? "none",
   );
   const opacity = useSharedValue(1);
 
@@ -70,6 +106,7 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
   useEffect(() => {
     setFontIndex(0);
     setColor(initialConfig?.color ?? TEXT_COLORS[0]);
+    setTextEffect(initialConfig?.textEffect ?? "none");
   }, [initialConfig]);
 
   const cycleFont = useCallback(() => {
@@ -87,6 +124,15 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
     });
   }, []);
 
+  const cycleTextEffect = useCallback(() => {
+    setTextEffect((prev) => {
+      if (prev === "none") return "shadow";
+      if (prev === "shadow") return "outline";
+      if (prev === "outline") return "border";
+      return "none";
+    });
+  }, []);
+
   const font = FONTS[fontIndex];
   const fontSize =
     fontIndex === 0 && initialConfig?.fontSize != null
@@ -97,14 +143,21 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
       ? Math.round(initialConfig.fontSize * LINE_HEIGHT_RATIO)
       : font.lineHeight;
 
+  const textEffectStyle = computeTextEffectStyle(textEffect, color);
+  const strokeColor = getTextStrokeColor(textEffect, color);
+
   return {
     font,
     fontSize,
     lineHeight,
     color,
+    textEffect,
+    textEffectStyle,
+    strokeColor,
     animatedStyle,
     cycleFont,
     cycleColor,
+    cycleTextEffect,
   };
 }
 

@@ -8,10 +8,19 @@ const GRADIENT_START = { x: 0, y: 0 };
 const GRADIENT_END = { x: 0, y: 1 };
 
 export function CardFontButtons() {
-  const { focusedBlockId, cycleBlockFont, cycleBlockColor, clearBlock } =
-    useGreetingContext();
+  const {
+    focusedBlockId,
+    textBlocks,
+    cycleBlockFont,
+    cycleBlockColor,
+    cycleBlockTextEffect,
+    clearBlock,
+  } = useGreetingContext();
 
   if (!focusedBlockId) return null;
+
+  const focusedBlock = textBlocks.find((b) => b.id === focusedBlockId);
+  const textEffectActive = focusedBlock?.textEffect !== "none";
 
   return (
     <CardButtonGroup
@@ -25,6 +34,17 @@ export function CardFontButtons() {
 
       <CardIconButton onPress={cycleBlockColor}>
         <ColorCircleIcon />
+      </CardIconButton>
+
+      <CardIconButton
+        onPress={cycleBlockTextEffect}
+        style={
+          textEffectActive
+            ? { backgroundColor: "rgba(255,255,255,0.45)" }
+            : undefined
+        }
+      >
+        <Ionicons name="sparkles-outline" size={18} color="white" />
       </CardIconButton>
 
       <CardIconButton onPress={clearBlock}>

@@ -31,6 +31,7 @@ export const CardButtonsContainer = styled.View`
   top: ${({ theme }) => theme.space.lg + theme.space.md}px;
   right: ${({ theme }) => theme.space.lg + theme.space.md}px;
   gap: ${({ theme }) => theme.space.sm}px;
+  z-index: 10;
 `;
 
 export const CardButtonGroup = styled(LinearGradient)`

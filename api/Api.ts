@@ -21,6 +21,11 @@ export interface TextBlockConfigDto {
    * @example "#FFFFFF"
    */
   color: string;
+  /**
+   * Initial text effect
+   * @example "shadow"
+   */
+  textEffect?: "none" | "shadow" | "outline";
   /** @example "center" */
   position:
     | "top-left"

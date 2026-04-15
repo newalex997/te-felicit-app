@@ -38,10 +38,6 @@ const SeparatorLine = styled.View`
   background-color: rgba(255, 215, 0, 0.35);
 `;
 
-const SeparatorEmoji = styled.Text`
-  font-size: 13px;
-`;
-
 const CardInner = styled.View`
   flex: 1;
   border-radius: 13.5px;
@@ -149,7 +145,6 @@ export function MoodPicker({ onSelect }: Props) {
           <>
             <HolidaySeparator>
               <SeparatorLine />
-              <SeparatorEmoji>✨</SeparatorEmoji>
             </HolidaySeparator>
 
             {holidayMoods.map((item) => (
@@ -174,7 +169,6 @@ export function MoodPicker({ onSelect }: Props) {
 
             <HolidaySeparator>
               <SeparatorLine />
-              <SeparatorEmoji>✨</SeparatorEmoji>
             </HolidaySeparator>
           </>
         )}

@@ -11,7 +11,14 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
+import { TextEffect } from "../../context/useTextBlockState";
 import { TextElementState } from "./useTextElementState";
+
+const STROKE_OFFSETS: [number, number][] = [
+  [-1.5, -1.5], [-1.5, 0], [-1.5, 1.5],
+  [0, -1.5],               [0, 1.5],
+  [1.5, -1.5],  [1.5, 0],  [1.5, 1.5],
+];
 
 const FONT_SIZE_MIN_DELTA = -12;
 const FONT_SIZE_MAX_DELTA = 24;
@@ -24,6 +31,8 @@ type Props = {
   animatedStyle?: AnimatedStyle<ViewStyle>;
   isSelected?: boolean;
   onTap?: () => void;
+  textEffect?: TextEffect;
+  strokeColor?: string;
 };
 
 export function DraggableText({
@@ -33,6 +42,8 @@ export function DraggableText({
   animatedStyle,
   isSelected = false,
   onTap,
+  textEffect,
+  strokeColor,
 }: Props) {
   const { x, y, baseFontSize, baseLineHeight, fontSizeOffset } = state;
   const prevScale = useSharedValue(1);
@@ -82,7 +93,30 @@ export function DraggableText({
       <Animated.View style={dragStyle}>
         <Animated.View style={animatedStyle}>
           <View style={isSelected ? styles.selected : styles.unselected}>
-            <Animated.Text style={[style, sizeStyle]}>{children}</Animated.Text>
+            {textEffect === "border" && strokeColor ? (
+              <View>
+                {STROKE_OFFSETS.map(([dx, dy]) => (
+                  <Animated.Text
+                    key={`stroke-${dx}-${dy}`}
+                    style={[
+                      style,
+                      sizeStyle,
+                      {
+                        position: "absolute",
+                        color: strokeColor,
+                        transform: [{ translateX: dx }, { translateY: dy }],
+                      },
+                    ]}
+                    aria-hidden
+                  >
+                    {children}
+                  </Animated.Text>
+                ))}
+                <Animated.Text style={[style, sizeStyle]}>{children}</Animated.Text>
+              </View>
+            ) : (
+              <Animated.Text style={[style, sizeStyle]}>{children}</Animated.Text>
+            )}
           </View>
         </Animated.View>
       </Animated.View>
