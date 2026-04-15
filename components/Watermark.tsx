@@ -10,7 +10,7 @@ const Container = styled.View`
   flex-direction: row;
   align-items: center;
   gap: 5px;
-  opacity: 0.6;
+  opacity: 0.4;
 `;
 
 const Logo = styled(Image)`

@@ -75,4 +75,5 @@ export interface MoodOptionDto {
 
 export interface MoodOptionsResponseDto {
   moods: MoodOptionDto[];
+  holidayMoods: MoodOptionDto[];
 }

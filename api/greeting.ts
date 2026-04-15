@@ -14,14 +14,24 @@ export type {
 };
 
 export const greetingApi = {
-  getGreeting: (mood?: string) =>
-    apiClient.get<GreetingResponseDto>(
-      mood ? `/greeting?mood=${mood}` : "/greeting",
-    ),
-  getMessage: (mood?: string) =>
-    apiClient.get<GreetingMessageResponseDto>(
-      mood ? `/greeting/message?mood=${mood}` : "/greeting/message",
-    ),
+  getGreeting: (mood?: string, holiday?: string) => {
+    const params = new URLSearchParams();
+    if (mood) params.set("mood", mood);
+    if (holiday) params.set("holiday", holiday);
+    const query = params.toString();
+    return apiClient.get<GreetingResponseDto>(
+      query ? `/greeting?${query}` : "/greeting",
+    );
+  },
+  getMessage: (mood?: string, holiday?: string) => {
+    const params = new URLSearchParams();
+    if (mood) params.set("mood", mood);
+    if (holiday) params.set("holiday", holiday);
+    const query = params.toString();
+    return apiClient.get<GreetingMessageResponseDto>(
+      query ? `/greeting/message?${query}` : "/greeting/message",
+    );
+  },
   getImage: () => apiClient.get<GreetingImageResponseDto>("/greeting/image"),
   getMoods: () => apiClient.get<MoodOptionsResponseDto>("/greeting/moods"),
 };

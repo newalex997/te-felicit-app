@@ -35,6 +35,8 @@ interface GreetingContextValue {
   refreshImage: () => void;
   mood: string | undefined;
   setMood: (mood: string | undefined) => void;
+  holiday: string | undefined;
+  setHoliday: (holiday: string | undefined) => void;
 }
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
@@ -48,6 +50,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
   const [focusedBlockId, setFocusedBlockId] = useState<TextBlockId | null>(null);
   const [mood, setMood] = useState<string | undefined>(undefined);
+  const [holiday, setHoliday] = useState<string | undefined>(undefined);
   const [sloganConfig, setSloganConfig] = useState<TextBlockConfigDto | null>(null);
   const [messageConfig, setMessageConfig] = useState<TextBlockConfigDto | null>(null);
 
@@ -57,7 +60,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const refreshGreeting = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await greetingApi.getGreeting(mood);
+      const data = await greetingApi.getGreeting(mood, holiday);
       setTexts({ slogan: data.slogan, message: data.message });
       setImageUrl(data.imageUrl);
       setSloganConfig(data.textConfig.slogan);
@@ -65,7 +68,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [mood]);
+  }, [mood, holiday]);
 
   useEffect(() => {
     refreshGreeting();
@@ -125,6 +128,8 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         refreshImage,
         mood,
         setMood,
+        holiday,
+        setHoliday,
       }}
     >
       {children}

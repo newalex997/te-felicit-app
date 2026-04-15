@@ -10,14 +10,14 @@ import { MoodPicker } from "../components/MoodPicker";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
-  const { refreshGreeting, loading, setMood } = useGreetingContext();
+  const { refreshGreeting, loading, setMood, setHoliday } = useGreetingContext();
   const { share, sharing } = useShareContext();
   const { cardStyle, swipe } = useCardSwipe(refreshGreeting);
   const { t } = useI18n();
 
   return (
     <Container>
-      <MoodPicker onSelect={(id) => setMood(id === "all" ? undefined : id)} />
+      <MoodPicker onSelect={({ mood, holidayMood }) => { setMood(mood); setHoliday(holidayMood); }} />
       <GreetingCard cardStyle={cardStyle} />
       <ActionButtons
         swipe={swipe}
