@@ -25,7 +25,7 @@ export interface TextBlockConfigDto {
    * Initial text effect
    * @example "shadow"
    */
-  textEffect?: "none" | "shadow" | "outline";
+  textEffect?: "none" | "shadow" | "outline" | "border";
   /** @example "center" */
   position:
     | "top-left"
