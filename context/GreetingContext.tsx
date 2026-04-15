@@ -89,9 +89,9 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   }, [focusedBlockId]);
 
   const refreshImage = useCallback(async () => {
-    const data = await greetingApi.getImage();
+    const data = await greetingApi.getImage(mood, holiday);
     setImageUrl(data.imageUrl);
-  }, []);
+  }, [mood, holiday]);
 
   const buildBlock = (
     id: TextBlockId,

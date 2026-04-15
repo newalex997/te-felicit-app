@@ -19,6 +19,7 @@ export const greetingApi = {
     if (mood) params.set("mood", mood);
     if (holiday) params.set("holiday", holiday);
     const query = params.toString();
+
     return apiClient.get<GreetingResponseDto>(
       query ? `/greeting?${query}` : "/greeting",
     );
@@ -32,6 +33,14 @@ export const greetingApi = {
       query ? `/greeting/message?${query}` : "/greeting/message",
     );
   },
-  getImage: () => apiClient.get<GreetingImageResponseDto>("/greeting/image"),
+  getImage: (mood?: string, holiday?: string) => {
+    const params = new URLSearchParams();
+    if (mood) params.set("mood", mood);
+    if (holiday) params.set("holiday", holiday);
+    const query = params.toString();
+    return apiClient.get<GreetingImageResponseDto>(
+      query ? `/greeting/image?${query}` : "/greeting/image",
+    );
+  },
   getMoods: () => apiClient.get<MoodOptionsResponseDto>("/greeting/moods"),
 };
