@@ -65,6 +65,8 @@ const Label = styled.Text`
   font-size: 11px;
   font-weight: 600;
   text-align: center;
+  padding-left: 6px;
+  padding-right: 6px;
 `;
 
 export type MoodSelection = { mood?: string; holidayMood?: string };
@@ -136,7 +138,7 @@ export function MoodPicker({ onSelect }: Props) {
                   end={{ x: 1, y: 1 }}
                 >
                   <EmojiText>{allCard.emoji}</EmojiText>
-                  <Label numberOfLines={1}>{allCard.label}</Label>
+                  <Label numberOfLines={2}>{allCard.label}</Label>
                 </Gradient>
               </CardInner>
             </CardRing>
@@ -163,7 +165,7 @@ export function MoodPicker({ onSelect }: Props) {
                       end={{ x: 1, y: 1 }}
                     >
                       <EmojiText>{item.emoji}</EmojiText>
-                      <Label numberOfLines={1}>{item.label}</Label>
+                      <Label numberOfLines={2}>{item.label}</Label>
                     </Gradient>
                   </CardInner>
                 </CardRing>
