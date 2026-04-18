@@ -8,12 +8,6 @@ import {
 } from "react-native-reanimated";
 import { TextBlockConfigDto } from "../api/Api";
 
-export type FontEntry = {
-  fontFamily: string;
-  fontSize: number;
-  lineHeight: number;
-};
-
 export const TEXT_COLORS = [
   "#FFFFFF",
   "#FFE066",
@@ -33,24 +27,20 @@ export const TEXT_COLORS = [
   "#A0C4FF",
 ] as const;
 
-export const FONTS: FontEntry[] = [
-  { fontFamily: "GreatVibes_400Regular", fontSize: 32, lineHeight: 44 },
-  { fontFamily: "DancingScript_400Regular", fontSize: 30, lineHeight: 42 },
-  { fontFamily: "DancingScript_700Bold", fontSize: 30, lineHeight: 42 },
-  { fontFamily: "Lora_400Regular", fontSize: 24, lineHeight: 36 },
-  { fontFamily: "Lora_700Bold", fontSize: 24, lineHeight: 36 },
-  { fontFamily: "CormorantGaramond_300Light", fontSize: 28, lineHeight: 40 },
-  { fontFamily: "CormorantGaramond_600SemiBold", fontSize: 26, lineHeight: 38 },
-  { fontFamily: "PlayfairDisplay_400Regular", fontSize: 26, lineHeight: 38 },
-  {
-    fontFamily: "PlayfairDisplay_400Regular_Italic",
-    fontSize: 26,
-    lineHeight: 38,
-  },
-  { fontFamily: "PlayfairDisplay_700Bold", fontSize: 24, lineHeight: 36 },
-  { fontFamily: "Pacifico_400Regular", fontSize: 24, lineHeight: 36 },
-  { fontFamily: "Inter_400Regular", fontSize: 18, lineHeight: 28 },
-  { fontFamily: "Inter_600SemiBold", fontSize: 18, lineHeight: 28 },
+export const FONTS: string[] = [
+  "GreatVibes_400Regular",
+  "DancingScript_400Regular",
+  "DancingScript_700Bold",
+  "Lora_400Regular",
+  "Lora_700Bold",
+  "CormorantGaramond_300Light",
+  "CormorantGaramond_600SemiBold",
+  "PlayfairDisplay_400Regular",
+  "PlayfairDisplay_400Regular_Italic",
+  "PlayfairDisplay_700Bold",
+  "Pacifico_400Regular",
+  "Inter_400Regular",
+  "Inter_600SemiBold",
 ];
 
 export type TextEffect = "none" | "shadow" | "outline" | "border";
@@ -63,7 +53,10 @@ function getContrastColor(hex: string): string {
   return luminance > 0.45 ? "#000000" : "#FFFFFF";
 }
 
-export function getTextStrokeColor(effect: TextEffect, color: string): string | undefined {
+export function getTextStrokeColor(
+  effect: TextEffect,
+  color: string,
+): string | undefined {
   if (effect !== "border") return undefined;
   return getContrastColor(color);
 }
@@ -91,6 +84,9 @@ const LINE_HEIGHT_RATIO = 1.4;
 
 export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
   const [fontIndex, setFontIndex] = useState(0);
+  const [fontSize, setFontSize] = useState<number>(
+    initialConfig?.fontSize ?? 0,
+  );
   const [color, setColor] = useState<string>(
     initialConfig?.color ?? TEXT_COLORS[0],
   );
@@ -105,6 +101,7 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
 
   useEffect(() => {
     setFontIndex(0);
+    setFontSize(initialConfig?.fontSize ?? 0);
     setColor(initialConfig?.color ?? TEXT_COLORS[0]);
     setTextEffect(initialConfig?.textEffect ?? "none");
   }, [initialConfig]);
@@ -133,21 +130,13 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
     });
   }, []);
 
-  const font = FONTS[fontIndex];
-  const fontSize =
-    fontIndex === 0 && initialConfig?.fontSize != null
-      ? initialConfig.fontSize
-      : font.fontSize;
-  const lineHeight =
-    fontIndex === 0 && initialConfig?.fontSize != null
-      ? Math.round(initialConfig.fontSize * LINE_HEIGHT_RATIO)
-      : font.lineHeight;
-
+  const fontFamily = FONTS[fontIndex];
+  const lineHeight = Math.round(fontSize * LINE_HEIGHT_RATIO);
   const textEffectStyle = computeTextEffectStyle(textEffect, color);
   const strokeColor = getTextStrokeColor(textEffect, color);
 
   return {
-    font,
+    fontFamily,
     fontSize,
     lineHeight,
     color,
@@ -158,6 +147,7 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
     cycleFont,
     cycleColor,
     cycleTextEffect,
+    setFontSize,
   };
 }
 

@@ -1,5 +1,11 @@
+import { useEffect } from "react";
 import { View, ViewStyle } from "react-native";
-import Animated, { AnimatedStyle } from "react-native-reanimated";
+import Animated, {
+  AnimatedStyle,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 import { useGreetingContext } from "../context/GreetingContext";
 import { useShareContext } from "../context/ShareContext";
 import {
@@ -25,21 +31,31 @@ type Props = {
 export function GreetingCard({ cardStyle }: Props) {
   const { imageUrl } = useGreetingContext();
   const { cardRef } = useShareContext();
+  const opacity = useSharedValue(0);
+
+  useEffect(() => {
+    opacity.value = 0;
+    opacity.value = withTiming(1, { duration: 400 });
+  }, [imageUrl, opacity]);
+
+  const imageStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
   return (
     <Animated.View style={cardStyle}>
       <CardFrame>
         <View ref={cardRef} collapsable={false} style={cardViewStyle}>
-          <Card source={{ uri: imageUrl }} resizeMode="cover">
-            <CardOverlay
-              colors={OVERLAY_COLORS}
-              start={OVERLAY_START}
-              end={OVERLAY_END}
-            >
-              <CardFont />
-              <Watermark />
-            </CardOverlay>
-          </Card>
+          <Animated.View style={[{ flex: 1 }, imageStyle]}>
+            <Card source={{ uri: imageUrl }} resizeMode="cover">
+              <CardOverlay
+                colors={OVERLAY_COLORS}
+                start={OVERLAY_START}
+                end={OVERLAY_END}
+              >
+                <CardFont />
+                <Watermark />
+              </CardOverlay>
+            </Card>
+          </Animated.View>
         </View>
       </CardFrame>
 

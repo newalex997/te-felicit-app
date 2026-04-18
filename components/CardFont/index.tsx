@@ -1,28 +1,40 @@
-import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
+import { ViewStyle } from "react-native";
+import { styled } from "styled-components/native";
 import { TextBlock, useGreetingContext } from "../../context/GreetingContext";
 import { TextBlockConfigDto } from "../../api/Api";
 import { useTextElementState } from "./useTextElementState";
 import { DraggableText } from "./DraggableText";
 
-function getPositionContainerStyle(
-  position: TextBlockConfigDto["position"],
-): ViewStyle {
+const Container = styled.View`
+  flex: 1;
+  align-self: stretch;
+`;
+
+const BackgroundDismiss = styled.Pressable`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`;
+
+function getPositionStyle(position: TextBlockConfigDto["position"]): ViewStyle {
   const [vertical, horizontal = "center"] = position.split("-");
   return {
     justifyContent:
-      vertical === "top"
-        ? "flex-start"
-        : vertical === "bottom"
-          ? "flex-end"
-          : "center",
+      vertical === "top" ? "flex-start" : vertical === "bottom" ? "flex-end" : "center",
     alignItems:
-      horizontal === "left"
-        ? "flex-start"
-        : horizontal === "right"
-          ? "flex-end"
-          : "center",
+      horizontal === "left" ? "flex-start" : horizontal === "right" ? "flex-end" : "center",
   };
 }
+
+const PositionLayer = styled.View`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`;
 
 type TextBlockItemProps = {
   block: TextBlock;
@@ -40,9 +52,7 @@ function TextBlockItem({ block, isSelected, onTap }: TextBlockItemProps) {
     <DraggableText
       state={state}
       style={{
-        fontFamily: block.font.fontFamily,
-        fontSize: block.fontSize,
-        lineHeight: block.lineHeight,
+        fontFamily: block.fontFamily,
         color: block.color,
         textAlign: "center",
         ...block.textEffectStyle,
@@ -59,35 +69,27 @@ function TextBlockItem({ block, isSelected, onTap }: TextBlockItemProps) {
 }
 
 export function CardFont() {
-  const { textBlocks, focusedBlockId, setFocusedBlockId } =
-    useGreetingContext();
+  const { textBlocks, focusedBlockId, setFocusedBlockId } = useGreetingContext();
 
   const visibleBlocks = textBlocks.filter((b) => b.text);
 
-  const positionGroups = visibleBlocks.reduce<
-    Map<string, typeof visibleBlocks>
-  >((map, block) => {
-    const key = block.position;
-    if (!map.has(key)) map.set(key, []);
-    map.get(key)!.push(block);
-    return map;
-  }, new Map());
+  const positionGroups = visibleBlocks.reduce<Map<string, typeof visibleBlocks>>(
+    (map, block) => {
+      const key = block.position;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(block);
+      return map;
+    },
+    new Map(),
+  );
 
   return (
-    <View style={styles.container}>
-      <Pressable
-        style={StyleSheet.absoluteFill}
-        onPress={() => setFocusedBlockId(null)}
-      />
+    <Container>
+      <BackgroundDismiss onPress={() => setFocusedBlockId(null)} />
       {Array.from(positionGroups.entries()).map(([position, blocks]) => (
-        <View
+        <PositionLayer
           key={position}
-          style={[
-            StyleSheet.absoluteFill,
-            getPositionContainerStyle(
-              position as TextBlockConfigDto["position"],
-            ),
-          ]}
+          style={getPositionStyle(position as TextBlockConfigDto["position"])}
         >
           {blocks.map((block) => (
             <TextBlockItem
@@ -97,15 +99,8 @@ export function CardFont() {
               onTap={() => setFocusedBlockId(block.id)}
             />
           ))}
-        </View>
+        </PositionLayer>
       ))}
-    </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignSelf: "stretch",
-  },
-});

@@ -38,6 +38,7 @@ export const CardButtonGroup = styled(LinearGradient)`
   gap: ${({ theme }) => theme.space.sm}px;
   padding: ${({ theme }) => theme.space.sm}px;
   border-radius: ${({ theme }) => theme.radii.lg}px;
+  align-items: center;
 `;
 
 export const CardIconButton = styled.Pressable`

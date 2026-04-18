@@ -1,6 +1,8 @@
 {
-  "tryAnother": "Mai încearcă",
+  "tryAnother": "Alt mesaj",
   "loading": "Se încarcă...",
   "share": "Distribuie",
-  "sharing": "Se distribuie..."
+  "sharing": "Se distribuie...",
+  "holidaysLabel": "Sărbători",
+  "moodsLabel": "Stări"
 }

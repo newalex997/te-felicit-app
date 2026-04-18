@@ -11,15 +11,13 @@ export function useTextElementState({ fontSize, lineHeight }: Options) {
   const y = useSharedValue(0);
   const baseFontSize = useSharedValue(fontSize);
   const baseLineHeight = useSharedValue(lineHeight);
-  const fontSizeOffset = useSharedValue(0);
 
-  // Keep base size in sync when the font prop changes (e.g. changeFont cycles fonts)
   useEffect(() => {
     baseFontSize.value = fontSize;
     baseLineHeight.value = lineHeight;
   }, [fontSize, lineHeight]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { x, y, baseFontSize, baseLineHeight, fontSizeOffset };
+  return { x, y, baseFontSize, baseLineHeight };
 }
 
 export type TextElementState = ReturnType<typeof useTextElementState>;

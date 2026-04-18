@@ -10,7 +10,7 @@ const Container = styled.View`
   flex-direction: row;
   align-items: center;
   gap: 5px;
-  opacity: 0.4;
+  opacity: 0.6;
 `;
 
 const Logo = styled(Image)`
@@ -30,7 +30,7 @@ export function Watermark() {
   return (
     <Container pointerEvents="none">
       <Logo source={logo} />
-      <Label>Mesaje din Suflet</Label>
+      <Label>mesajedinsuflet</Label>
     </Container>
   );
 }

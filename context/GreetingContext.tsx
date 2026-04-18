@@ -7,15 +7,16 @@ import {
 } from "react";
 import { greetingApi } from "../api/greeting";
 import { TextBlockConfigDto } from "../api/Api";
-import { FontEntry, TextBlockState, TextEffect, useTextBlockState } from "./useTextBlockState";
+import { TextBlockState, TextEffect, useTextBlockState } from "./useTextBlockState";
 
 export type TextBlockId = "slogan" | "message";
 
 export type TextBlock = {
   id: TextBlockId;
   text: string;
-  font: FontEntry;
+  fontFamily: string;
   fontSize: number;
+  baseFontSize: number;
   lineHeight: number;
   color: string;
   textEffect: TextEffect;
@@ -34,6 +35,7 @@ interface GreetingContextValue {
   cycleBlockFont: () => void;
   cycleBlockColor: () => void;
   cycleBlockTextEffect: () => void;
+  setBlockFontSize: (size: number) => void;
   clearBlock: () => void;
   refreshGreeting: () => Promise<void>;
   refreshImage: () => void;
@@ -44,6 +46,16 @@ interface GreetingContextValue {
 }
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
+
+function getFocusedState(
+  focusedBlockId: TextBlockId | null,
+  sloganState: TextBlockState,
+  messageState: TextBlockState,
+): TextBlockState | null {
+  if (focusedBlockId === "slogan") return sloganState;
+  if (focusedBlockId === "message") return messageState;
+  return null;
+}
 
 export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const [texts, setTexts] = useState<Record<TextBlockId, string>>({
@@ -60,6 +72,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
 
   const sloganState = useTextBlockState(sloganConfig);
   const messageState = useTextBlockState(messageConfig);
+  const focusedState = getFocusedState(focusedBlockId, sloganState, messageState);
 
   const refreshGreeting = useCallback(async () => {
     setLoading(true);
@@ -78,20 +91,10 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     refreshGreeting();
   }, [refreshGreeting]);
 
-  const cycleBlockFont = useCallback(() => {
-    if (focusedBlockId === "slogan") sloganState.cycleFont();
-    else if (focusedBlockId === "message") messageState.cycleFont();
-  }, [focusedBlockId, sloganState, messageState]);
-
-  const cycleBlockColor = useCallback(() => {
-    if (focusedBlockId === "slogan") sloganState.cycleColor();
-    else if (focusedBlockId === "message") messageState.cycleColor();
-  }, [focusedBlockId, sloganState, messageState]);
-
-  const cycleBlockTextEffect = useCallback(() => {
-    if (focusedBlockId === "slogan") sloganState.cycleTextEffect();
-    else if (focusedBlockId === "message") messageState.cycleTextEffect();
-  }, [focusedBlockId, sloganState, messageState]);
+  const cycleBlockFont = useCallback(() => focusedState?.cycleFont(), [focusedState]);
+  const cycleBlockColor = useCallback(() => focusedState?.cycleColor(), [focusedState]);
+  const cycleBlockTextEffect = useCallback(() => focusedState?.cycleTextEffect(), [focusedState]);
+  const setBlockFontSize = useCallback((size: number) => focusedState?.setFontSize(size), [focusedState]);
 
   const clearBlock = useCallback(() => {
     if (focusedBlockId) setTexts((prev) => ({ ...prev, [focusedBlockId]: "" }));
@@ -109,8 +112,9 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   ): TextBlock => ({
     id,
     text: texts[id],
-    font: state.font,
+    fontFamily: state.fontFamily,
     fontSize: state.fontSize,
+    baseFontSize: config?.fontSize ?? 0,
     lineHeight: state.lineHeight,
     color: state.color,
     textEffect: state.textEffect,
@@ -136,6 +140,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         cycleBlockFont,
         cycleBlockColor,
         cycleBlockTextEffect,
+        setBlockFontSize,
         clearBlock,
         refreshGreeting,
         refreshImage,

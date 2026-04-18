@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { useGreetingContext } from "../context/GreetingContext";
 import { CardButtonGroup, CardIconButton } from "../styles/index.styles";
 
@@ -16,7 +16,7 @@ export function CardImageButtons() {
       end={GRADIENT_END}
     >
       <CardIconButton onPress={refreshImage}>
-        <Ionicons name="image-outline" size={18} color="white" />
+        <Feather name="refresh-cw" size={16} color="white" />
       </CardIconButton>
     </CardButtonGroup>
   );

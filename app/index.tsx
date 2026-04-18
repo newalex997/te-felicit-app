@@ -10,9 +10,10 @@ import { MoodPicker } from "../components/MoodPicker";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
-  const { refreshGreeting, loading, setMood, setHoliday } = useGreetingContext();
+  const { refreshGreeting, loading, setMood, setHoliday, setFocusedBlockId } = useGreetingContext();
   const { share, sharing } = useShareContext();
-  const { cardStyle, swipe } = useCardSwipe(refreshGreeting);
+  const { cardStyle, swipe: swipeCard } = useCardSwipe(refreshGreeting);
+  const swipe = () => { setFocusedBlockId(null); swipeCard(); };
   const { t } = useI18n();
 
   return (

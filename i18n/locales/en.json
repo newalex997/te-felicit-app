@@ -1,6 +1,8 @@
 {
-  "tryAnother": "Try another",
+  "tryAnother": "Another one",
   "loading": "Loading...",
   "share": "Share",
-  "sharing": "Sharing..."
+  "sharing": "Sharing...",
+  "holidaysLabel": "Holidays",
+  "moodsLabel": "Moods"
 }

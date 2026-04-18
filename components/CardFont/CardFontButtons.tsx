@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useGreetingContext } from "../../context/GreetingContext";
 import { CardButtonGroup, CardIconButton } from "../../styles/index.styles";
 import { ColorCircleIcon } from "./ColorCircleIcon";
+import { FontSizeSlider } from "./FontSizeSlider";
 
 const GRADIENT_COLORS = ["rgba(0,0,0,0.75)", "rgba(0,0,0,0.3)"] as const;
 const GRADIENT_START = { x: 0, y: 0 };
@@ -14,6 +15,7 @@ export function CardFontButtons() {
     cycleBlockFont,
     cycleBlockColor,
     cycleBlockTextEffect,
+    setBlockFontSize,
     clearBlock,
   } = useGreetingContext();
 
@@ -21,6 +23,8 @@ export function CardFontButtons() {
 
   const focusedBlock = textBlocks.find((b) => b.id === focusedBlockId);
   const textEffectActive = focusedBlock?.textEffect !== "none";
+  const currentFontSize = focusedBlock?.fontSize ?? 0;
+  const baseFontSize = focusedBlock?.baseFontSize ?? 0;
 
   return (
     <CardButtonGroup
@@ -46,6 +50,8 @@ export function CardFontButtons() {
       >
         <Ionicons name="sparkles-outline" size={18} color="white" />
       </CardIconButton>
+
+      <FontSizeSlider value={currentFontSize} baseFontSize={baseFontSize} onChange={setBlockFontSize} />
 
       <CardIconButton onPress={clearBlock}>
         <Ionicons name="trash-outline" size={18} color="white" />

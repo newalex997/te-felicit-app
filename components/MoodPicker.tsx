@@ -5,14 +5,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { styled } from "styled-components/native";
 import { greetingApi } from "../api/greeting";
 import { MoodOptionDto } from "@/api/Api";
+import { useI18n } from "../context/I18nContext";
 
 const CARD_WIDTH = 80;
 const CARD_HEIGHT = 120;
+const GROUP_LABEL_HEIGHT = 18;
 
 const Wrapper = styled.View<{ topInset: number }>`
   background-color: ${({ theme }) => theme.colors.background};
   padding-top: ${({ topInset }) => topInset + 8}px;
-  height: ${({ topInset }) => topInset + 8 + CARD_HEIGHT + 8}px;
+  height: ${({ topInset }) =>
+    topInset + 8 + GROUP_LABEL_HEIGHT + 4 + CARD_HEIGHT + 8}px;
 `;
 
 const CardRing = styled.View<{ selected: boolean }>`
@@ -65,6 +68,25 @@ const Label = styled.Text`
   padding-right: 6px;
 `;
 
+const GroupLabel = styled.Text`
+  color: ${({ theme }) => theme.colors.text};
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  height: ${GROUP_LABEL_HEIGHT}px;
+  margin-bottom: 4px;
+`;
+
+const CardGroup = styled.View`
+  flex-direction: column;
+`;
+
+const CardRow = styled.View`
+  flex-direction: row;
+  gap: 10px;
+`;
+
 export type MoodSelection = { mood?: string; holidayMood?: string };
 
 type Props = {
@@ -80,6 +102,7 @@ export function MoodPicker({ onSelect }: Props) {
   const [moods, setMoods] = useState<MoodOptionDto[]>([]);
   const [holidayMoods, setHolidayMoods] = useState<MoodOptionDto[]>([]);
   const insets = useSafeAreaInsets();
+  const { t } = useI18n();
 
   useEffect(() => {
     greetingApi.getMoods().then((data) => {
@@ -126,6 +149,7 @@ export function MoodPicker({ onSelect }: Props) {
       >
         {allCard && (
           <Pressable onPress={handlePressAll}>
+            <GroupLabel />
             <CardRing selected={isAllSelected}>
               <CardInner>
                 <Gradient
@@ -147,25 +171,30 @@ export function MoodPicker({ onSelect }: Props) {
               <SeparatorLine />
             </HolidaySeparator>
 
-            {holidayMoods.map((item) => (
-              <Pressable
-                key={item.id}
-                onPress={() => handlePressHolidayMood(item.id)}
-              >
-                <CardRing selected={item.id === selectedHolidayMood}>
-                  <CardInner>
-                    <Gradient
-                      colors={item.gradient as [string, string]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                    >
-                      <EmojiText>{item.emoji}</EmojiText>
-                      <Label numberOfLines={2}>{item.label}</Label>
-                    </Gradient>
-                  </CardInner>
-                </CardRing>
-              </Pressable>
-            ))}
+            <CardGroup>
+              <GroupLabel>{t("holidaysLabel")}</GroupLabel>
+              <CardRow>
+                {holidayMoods.map((item) => (
+                  <Pressable
+                    key={item.id}
+                    onPress={() => handlePressHolidayMood(item.id)}
+                  >
+                    <CardRing selected={item.id === selectedHolidayMood}>
+                      <CardInner>
+                        <Gradient
+                          colors={item.gradient as [string, string]}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                        >
+                          <EmojiText>{item.emoji}</EmojiText>
+                          <Label numberOfLines={2}>{item.label}</Label>
+                        </Gradient>
+                      </CardInner>
+                    </CardRing>
+                  </Pressable>
+                ))}
+              </CardRow>
+            </CardGroup>
 
             <HolidaySeparator>
               <SeparatorLine />
@@ -173,22 +202,27 @@ export function MoodPicker({ onSelect }: Props) {
           </>
         )}
 
-        {moods.map((item) => (
-          <Pressable key={item.id} onPress={() => handlePressMood(item.id)}>
-            <CardRing selected={item.id === selectedMood}>
-              <CardInner>
-                <Gradient
-                  colors={item.gradient as [string, string]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                >
-                  <EmojiText>{item.emoji}</EmojiText>
-                  <Label numberOfLines={1}>{item.label}</Label>
-                </Gradient>
-              </CardInner>
-            </CardRing>
-          </Pressable>
-        ))}
+        <CardGroup>
+          <GroupLabel>{t("moodsLabel")}</GroupLabel>
+          <CardRow>
+            {moods.map((item) => (
+              <Pressable key={item.id} onPress={() => handlePressMood(item.id)}>
+                <CardRing selected={item.id === selectedMood}>
+                  <CardInner>
+                    <Gradient
+                      colors={item.gradient as [string, string]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                    >
+                      <EmojiText>{item.emoji}</EmojiText>
+                      <Label numberOfLines={1}>{item.label}</Label>
+                    </Gradient>
+                  </CardInner>
+                </CardRing>
+              </Pressable>
+            ))}
+          </CardRow>
+        </CardGroup>
       </ScrollView>
     </Wrapper>
   );

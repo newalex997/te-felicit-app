@@ -1,6 +1,8 @@
 {
-  "tryAnother": "Ещё один",
+  "tryAnother": "Показать ещё",
   "loading": "Загрузка...",
   "share": "Поделиться",
-  "sharing": "Отправка..."
+  "sharing": "Отправка...",
+  "holidaysLabel": "Праздники",
+  "moodsLabel": "Настроения"
 }
