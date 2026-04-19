@@ -23,10 +23,11 @@ export default function Index() {
 
   const handleMoodSelect = useCallback(
     ({ mood, holidayMood }: { mood: string | undefined; holidayMood: string | undefined }) => {
+      setFocusedBlockId(null);
       setMood(mood);
       setHoliday(holidayMood);
     },
-    [setMood, setHoliday],
+    [setMood, setHoliday, setFocusedBlockId],
   );
 
   return (

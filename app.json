@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mesaje din Suflet",
     "slug": "mesajedinsuflet",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mesajedinsuflet",
@@ -12,7 +12,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.pipedigital.mesajedinsuflet",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "CFBundleDevelopmentRegion": "ro",
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleLocalizations": ["ro", "en", "ru", "it"]
       }
     },
     "android": {
