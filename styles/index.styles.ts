@@ -11,7 +11,7 @@ export const CardFrame = styled.View`
   flex: 1;
   margin: ${({ theme }) => theme.space.lg}px;
   margin-top: ${({ theme }) => theme.space.lg}px;
-  border-radius: ${({ theme }) => theme.radii.lg}px;
+  border-radius: ${({ theme }) => theme.radii.md}px;
   overflow: hidden;
 `;
 

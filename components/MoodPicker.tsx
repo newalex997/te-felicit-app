@@ -38,7 +38,7 @@ const SeparatorLine = styled.View`
   position: absolute;
   width: 1px;
   height: 100%;
-  background-color: rgba(255, 215, 0, 0.35);
+  background-color: ${({ theme }) => theme.colors.surface};
 `;
 
 const CardInner = styled.View`
@@ -60,7 +60,7 @@ const EmojiText = styled.Text`
 `;
 
 const Label = styled.Text`
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.text};
   font-size: 11px;
   font-weight: 600;
   text-align: center;

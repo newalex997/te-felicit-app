@@ -47,16 +47,6 @@ interface GreetingContextValue {
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
 
-function getFocusedState(
-  focusedBlockId: TextBlockId | null,
-  sloganState: TextBlockState,
-  messageState: TextBlockState,
-): TextBlockState | null {
-  if (focusedBlockId === "slogan") return sloganState;
-  if (focusedBlockId === "message") return messageState;
-  return null;
-}
-
 export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const [texts, setTexts] = useState<Record<TextBlockId, string>>({
     slogan: "",
@@ -72,7 +62,10 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
 
   const sloganState = useTextBlockState(sloganConfig);
   const messageState = useTextBlockState(messageConfig);
-  const focusedState = getFocusedState(focusedBlockId, sloganState, messageState);
+  const focusedState =
+    focusedBlockId === "slogan" ? sloganState :
+    focusedBlockId === "message" ? messageState :
+    null;
 
   const refreshGreeting = useCallback(async () => {
     setLoading(true);
@@ -97,7 +90,10 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const setBlockFontSize = useCallback((size: number) => focusedState?.setFontSize(size), [focusedState]);
 
   const clearBlock = useCallback(() => {
-    if (focusedBlockId) setTexts((prev) => ({ ...prev, [focusedBlockId]: "" }));
+    if (focusedBlockId) {
+      setTexts((prev) => ({ ...prev, [focusedBlockId]: "" }));
+      setFocusedBlockId(null);
+    }
   }, [focusedBlockId]);
 
   const refreshImage = useCallback(async () => {

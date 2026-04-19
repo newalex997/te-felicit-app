@@ -1,5 +1,4 @@
 const BASE_URL = "https://mesajedinsuflet-api-y6r9b.ondigitalocean.app/api/v1";
-//https://mesajedinsuflet-api-y6r9b.ondigitalocean.app/api/v1
 let _locale: string | undefined;
 
 export function setApiLocale(locale: string) {

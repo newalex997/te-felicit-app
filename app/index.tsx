@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGreetingContext } from "../context/GreetingContext";
 import { useShareContext } from "../context/ShareContext";
@@ -13,12 +14,24 @@ export default function Index() {
   const { refreshGreeting, loading, setMood, setHoliday, setFocusedBlockId } = useGreetingContext();
   const { share, sharing } = useShareContext();
   const { cardStyle, swipe: swipeCard } = useCardSwipe(refreshGreeting);
-  const swipe = () => { setFocusedBlockId(null); swipeCard(); };
   const { t } = useI18n();
+
+  const swipe = useCallback(() => {
+    setFocusedBlockId(null);
+    swipeCard();
+  }, [setFocusedBlockId, swipeCard]);
+
+  const handleMoodSelect = useCallback(
+    ({ mood, holidayMood }: { mood: string | undefined; holidayMood: string | undefined }) => {
+      setMood(mood);
+      setHoliday(holidayMood);
+    },
+    [setMood, setHoliday],
+  );
 
   return (
     <Container>
-      <MoodPicker onSelect={({ mood, holidayMood }) => { setMood(mood); setHoliday(holidayMood); }} />
+      <MoodPicker onSelect={handleMoodSelect} />
       <GreetingCard cardStyle={cardStyle} />
       <ActionButtons
         swipe={swipe}

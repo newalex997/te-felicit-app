@@ -15,7 +15,7 @@ export function useTextElementState({ fontSize, lineHeight }: Options) {
   useEffect(() => {
     baseFontSize.value = fontSize;
     baseLineHeight.value = lineHeight;
-  }, [fontSize, lineHeight]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fontSize, lineHeight, baseFontSize, baseLineHeight]);
 
   return { x, y, baseFontSize, baseLineHeight };
 }

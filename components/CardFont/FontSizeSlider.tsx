@@ -54,9 +54,13 @@ type Props = {
   onChange: (size: number) => void;
 };
 
+const FONT_SIZE_MIN_RATIO = 0.8;
+const FONT_SIZE_MAX_RATIO = 1.2;
+const MIN_FILL_RATIO = 0.2;
+
 export function FontSizeSlider({ value, baseFontSize, onChange }: Props) {
-  const fontMin = Math.round(baseFontSize * 0.8);
-  const fontMax = Math.round(baseFontSize * 1.2);
+  const fontMin = Math.round(baseFontSize * FONT_SIZE_MIN_RATIO);
+  const fontMax = Math.round(baseFontSize * FONT_SIZE_MAX_RATIO);
   const isDragging = useRef(false);
   const thumbY = useSharedValue(toThumbY(value, fontMin, fontMax));
   const startY = useSharedValue(0);
@@ -88,7 +92,7 @@ export function FontSizeSlider({ value, baseFontSize, onChange }: Props) {
 
   const fillAnimatedStyle = useAnimatedStyle(() => {
     const fillHeight = Math.max(
-      SLIDER_HEIGHT * 0.2,
+      SLIDER_HEIGHT * MIN_FILL_RATIO,
       SLIDER_HEIGHT - thumbY.value,
     );
     const taperAmount = TAPER * (fillHeight / SLIDER_HEIGHT);

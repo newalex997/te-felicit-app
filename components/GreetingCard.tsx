@@ -19,6 +19,7 @@ import { CardImageButtons } from "./CardImageButtons";
 import { CardFont } from "./CardFont";
 import { Watermark } from "./Watermark";
 
+const CARD_FADE_DURATION = 800;
 const OVERLAY_COLORS = ["rgba(0,0,0,0.15)", "rgba(0,0,0,0.55)"] as const;
 const OVERLAY_START = { x: 0, y: 0 };
 const OVERLAY_END = { x: 0, y: 1 };
@@ -35,7 +36,7 @@ export function GreetingCard({ cardStyle }: Props) {
 
   useEffect(() => {
     opacity.value = 0;
-    opacity.value = withTiming(1, { duration: 400 });
+    opacity.value = withTiming(1, { duration: CARD_FADE_DURATION });
   }, [imageUrl, opacity]);
 
   const imageStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));

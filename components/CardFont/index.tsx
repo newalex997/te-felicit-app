@@ -1,4 +1,3 @@
-import { ViewStyle } from "react-native";
 import { styled } from "styled-components/native";
 import { TextBlock, useGreetingContext } from "../../context/GreetingContext";
 import { TextBlockConfigDto } from "../../api/Api";
@@ -18,7 +17,7 @@ const BackgroundDismiss = styled.Pressable`
   bottom: 0;
 `;
 
-function getPositionStyle(position: TextBlockConfigDto["position"]): ViewStyle {
+function getPositionStyle(position: TextBlockConfigDto["position"]) {
   const [vertical, horizontal = "center"] = position.split("-");
   return {
     justifyContent:
