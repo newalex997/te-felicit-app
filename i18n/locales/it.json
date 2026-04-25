@@ -4,5 +4,7 @@
   "share": "Condividi",
   "sharing": "Condivisione...",
   "holidaysLabel": "Festività",
-  "moodsLabel": "Stati d'animo"
+  "moodsLabel": "Stati d'animo",
+  "offlineTitle": "Nessuna connessione a Internet",
+  "offlineSubtitle": "Controlla la connessione e riprova."
 }

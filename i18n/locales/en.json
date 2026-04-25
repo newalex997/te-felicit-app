@@ -4,5 +4,7 @@
   "share": "Share",
   "sharing": "Sharing...",
   "holidaysLabel": "Holidays",
-  "moodsLabel": "Moods"
+  "moodsLabel": "Moods",
+  "offlineTitle": "No Internet Connection",
+  "offlineSubtitle": "Please check your connection and try again."
 }

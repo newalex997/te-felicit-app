@@ -4,5 +4,7 @@
   "share": "Distribuie",
   "sharing": "Se distribuie...",
   "holidaysLabel": "Sărbători",
-  "moodsLabel": "Stări"
+  "moodsLabel": "Stări",
+  "offlineTitle": "Fără conexiune la internet",
+  "offlineSubtitle": "Verifică conexiunea și încearcă din nou."
 }
