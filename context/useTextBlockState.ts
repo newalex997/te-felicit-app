@@ -44,6 +44,7 @@ export const FONTS: string[] = [
 ];
 
 export type TextEffect = "none" | "shadow" | "outline" | "border";
+export type TextAlign = "left" | "center" | "right";
 
 function getContrastColor(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -62,8 +63,15 @@ export function getTextStrokeColor(
 }
 
 function computeTextEffectStyle(effect: TextEffect, color: string): TextStyle {
-  if (effect === "none" || effect === "border") return {};
+  if (effect === "border") return {};
   const contrastColor = getContrastColor(color);
+  if (effect === "none") {
+    return {
+      textShadowColor: contrastColor,
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 3,
+    };
+  }
   if (effect === "shadow") {
     return {
       textShadowColor: contrastColor,
@@ -93,6 +101,7 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
   const [textEffect, setTextEffect] = useState<TextEffect>(
     initialConfig?.textEffect ?? "none",
   );
+  const [textAlign, setTextAlign] = useState<TextAlign>("center");
   const opacity = useSharedValue(1);
 
   const animatedStyle: AnimatedStyle<ViewStyle> = useAnimatedStyle(() => ({
@@ -104,6 +113,7 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
     setFontSize(initialConfig?.fontSize ?? 0);
     setColor(initialConfig?.color ?? TEXT_COLORS[0]);
     setTextEffect(initialConfig?.textEffect ?? "none");
+    setTextAlign("center");
   }, [initialConfig]);
 
   const cycleFont = useCallback(() => {
@@ -130,6 +140,14 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
     });
   }, []);
 
+  const cycleTextAlign = useCallback(() => {
+    setTextAlign((prev) => {
+      if (prev === "left") return "center";
+      if (prev === "center") return "right";
+      return "left";
+    });
+  }, []);
+
   const fontFamily = FONTS[fontIndex];
   const lineHeight = Math.round(fontSize * LINE_HEIGHT_RATIO);
   const textEffectStyle = computeTextEffectStyle(textEffect, color);
@@ -143,10 +161,12 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
     textEffect,
     textEffectStyle,
     strokeColor,
+    textAlign,
     animatedStyle,
     cycleFont,
     cycleColor,
     cycleTextEffect,
+    cycleTextAlign,
     setFontSize,
   };
 }

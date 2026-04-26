@@ -14,7 +14,6 @@ import {
   CardFrame,
   CardOverlay,
 } from "../styles/index.styles";
-import { CardFontButtons } from "./CardFont/CardFontButtons";
 import { CardImageButtons } from "./CardImageButtons";
 import { CardFont } from "./CardFont";
 import { Watermark } from "./Watermark";
@@ -30,14 +29,18 @@ type Props = {
 };
 
 export function GreetingCard({ cardStyle }: Props) {
-  const { imageUrl } = useGreetingContext();
+  const { imageUrl, setImageLoaded } = useGreetingContext();
   const { cardRef } = useShareContext();
   const opacity = useSharedValue(0);
 
   useEffect(() => {
     opacity.value = 0;
-    opacity.value = withTiming(1, { duration: CARD_FADE_DURATION });
   }, [imageUrl, opacity]);
+
+  function handleImageLoad() {
+    setImageLoaded();
+    opacity.value = withTiming(1, { duration: CARD_FADE_DURATION });
+  }
 
   const imageStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
@@ -46,7 +49,7 @@ export function GreetingCard({ cardStyle }: Props) {
       <CardFrame>
         <View ref={cardRef} collapsable={false} style={cardViewStyle}>
           <Animated.View style={[{ flex: 1 }, imageStyle]}>
-            <Card source={{ uri: imageUrl }} resizeMode="cover">
+            <Card source={{ uri: imageUrl }} resizeMode="cover" onLoadEnd={handleImageLoad}>
               <CardOverlay
                 colors={OVERLAY_COLORS}
                 start={OVERLAY_START}
@@ -62,7 +65,6 @@ export function GreetingCard({ cardStyle }: Props) {
 
       <CardButtonsContainer>
         <CardImageButtons />
-        <CardFontButtons />
       </CardButtonsContainer>
     </Animated.View>
   );

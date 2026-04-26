@@ -1,9 +1,21 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { styled } from "styled-components/native";
 import { useGreetingContext } from "../../context/GreetingContext";
-import { CardButtonGroup, CardIconButton } from "../../styles/index.styles";
-import { CARD_BUTTON_GRADIENT_COLORS, CARD_BUTTON_GRADIENT_END, CARD_BUTTON_GRADIENT_START } from "../../constants/gradients";
+import { CardIconButton } from "../../styles/index.styles";
 import { ColorCircleIcon } from "./ColorCircleIcon";
 import { FontSizeSlider } from "./FontSizeSlider";
+
+const Row = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 8px;
+  gap: 8px;
+`;
+
+const ActiveIconButton = styled(CardIconButton)`
+  background-color: rgba(255, 255, 255, 0.45);
+`;
 
 export function CardFontButtons() {
   const {
@@ -12,8 +24,8 @@ export function CardFontButtons() {
     cycleBlockFont,
     cycleBlockColor,
     cycleBlockTextEffect,
+    cycleBlockTextAlign,
     setBlockFontSize,
-    clearBlock,
   } = useGreetingContext();
 
   if (!focusedBlockId) return null;
@@ -23,12 +35,18 @@ export function CardFontButtons() {
   const currentFontSize = focusedBlock?.fontSize ?? 0;
   const baseFontSize = focusedBlock?.baseFontSize ?? 0;
 
+  const EffectButton = textEffectActive ? ActiveIconButton : CardIconButton;
+
+  const currentTextAlign = focusedBlock?.textAlign ?? "center";
+  const alignIconName =
+    currentTextAlign === "left"
+      ? "format-align-left"
+      : currentTextAlign === "right"
+        ? "format-align-right"
+        : "format-align-center";
+
   return (
-    <CardButtonGroup
-      colors={CARD_BUTTON_GRADIENT_COLORS}
-      start={CARD_BUTTON_GRADIENT_START}
-      end={CARD_BUTTON_GRADIENT_END}
-    >
+    <Row>
       <CardIconButton onPress={cycleBlockFont}>
         <Ionicons name="text-outline" size={18} color="white" />
       </CardIconButton>
@@ -37,22 +55,19 @@ export function CardFontButtons() {
         <ColorCircleIcon />
       </CardIconButton>
 
-      <CardIconButton
-        onPress={cycleBlockTextEffect}
-        style={
-          textEffectActive
-            ? { backgroundColor: "rgba(255,255,255,0.45)" }
-            : undefined
-        }
-      >
+      <EffectButton onPress={cycleBlockTextEffect}>
         <Ionicons name="sparkles-outline" size={18} color="white" />
+      </EffectButton>
+
+      <CardIconButton onPress={cycleBlockTextAlign}>
+        <MaterialCommunityIcons name={alignIconName} size={18} color="white" />
       </CardIconButton>
 
-      <FontSizeSlider value={currentFontSize} baseFontSize={baseFontSize} onChange={setBlockFontSize} />
-
-      <CardIconButton onPress={clearBlock}>
-        <Ionicons name="trash-outline" size={18} color="white" />
-      </CardIconButton>
-    </CardButtonGroup>
+      <FontSizeSlider
+        value={currentFontSize}
+        baseFontSize={baseFontSize}
+        onChange={setBlockFontSize}
+      />
+    </Row>
   );
 }

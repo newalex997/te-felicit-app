@@ -4,7 +4,8 @@ import { CardButtonGroup, CardIconButton } from "../styles/index.styles";
 import { CARD_BUTTON_GRADIENT_COLORS, CARD_BUTTON_GRADIENT_END, CARD_BUTTON_GRADIENT_START } from "../constants/gradients";
 
 export function CardImageButtons() {
-  const { refreshImage } = useGreetingContext();
+  const { refreshImage, imageLoading } = useGreetingContext();
+  const isDisabled = imageLoading;
 
   return (
     <CardButtonGroup
@@ -12,7 +13,11 @@ export function CardImageButtons() {
       start={CARD_BUTTON_GRADIENT_START}
       end={CARD_BUTTON_GRADIENT_END}
     >
-      <CardIconButton onPress={refreshImage}>
+      <CardIconButton
+        onPress={refreshImage}
+        disabled={isDisabled}
+        style={{ opacity: isDisabled ? 0.4 : 1 }}
+      >
         <Feather name="refresh-cw" size={16} color="white" />
       </CardIconButton>
     </CardButtonGroup>

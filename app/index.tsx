@@ -11,7 +11,8 @@ import { MoodPicker } from "../components/MoodPicker";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
-  const { refreshGreeting, loading, setMood, setHoliday, setFocusedBlockId } = useGreetingContext();
+  const { refreshGreeting, loading, setMood, setHoliday, setFocusedBlockId } =
+    useGreetingContext();
   const { share, sharing } = useShareContext();
   const { cardStyle, swipe: swipeCard } = useCardSwipe(refreshGreeting);
   const { t } = useI18n();
@@ -22,7 +23,7 @@ export default function Index() {
   }, [setFocusedBlockId, swipeCard]);
 
   const handleMoodSelect = useCallback(
-    ({ mood, holidayMood }: { mood: string | undefined; holidayMood: string | undefined }) => {
+    ({ mood, holidayMood }: { mood?: string; holidayMood?: string }) => {
       setFocusedBlockId(null);
       setMood(mood);
       setHoliday(holidayMood);

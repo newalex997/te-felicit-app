@@ -7,7 +7,7 @@ import {
 } from "react";
 import { greetingApi } from "../api/greeting";
 import { TextBlockConfigDto } from "../api/Api";
-import { TextBlockState, TextEffect, useTextBlockState } from "./useTextBlockState";
+import { TextAlign, TextBlockState, TextEffect, useTextBlockState } from "./useTextBlockState";
 
 export type TextBlockId = "slogan" | "message";
 
@@ -22,6 +22,7 @@ export type TextBlock = {
   textEffect: TextEffect;
   textEffectStyle: TextBlockState["textEffectStyle"];
   strokeColor: string | undefined;
+  textAlign: TextAlign;
   position: TextBlockConfigDto["position"];
   animatedStyle: TextBlockState["animatedStyle"];
 };
@@ -30,11 +31,15 @@ interface GreetingContextValue {
   textBlocks: TextBlock[];
   imageUrl: string;
   loading: boolean;
+  imageLoading: boolean;
+  setImageLoaded: () => void;
   focusedBlockId: TextBlockId | null;
   setFocusedBlockId: (id: TextBlockId | null) => void;
+  setBlockText: (id: TextBlockId, text: string) => void;
   cycleBlockFont: () => void;
   cycleBlockColor: () => void;
   cycleBlockTextEffect: () => void;
+  cycleBlockTextAlign: () => void;
   setBlockFontSize: (size: number) => void;
   clearBlock: () => void;
   refreshGreeting: () => Promise<void>;
@@ -54,7 +59,16 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   });
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  function updateImageUrl(url: string) {
+    setImageUrl(url);
+    setImageLoading(true);
+  }
+
+  const setImageLoaded = useCallback(() => setImageLoading(false), []);
   const [focusedBlockId, setFocusedBlockId] = useState<TextBlockId | null>(null);
+
   const [mood, setMood] = useState<string | undefined>(undefined);
   const [holiday, setHoliday] = useState<string | undefined>(undefined);
   const [sloganConfig, setSloganConfig] = useState<TextBlockConfigDto | null>(null);
@@ -72,7 +86,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     try {
       const data = await greetingApi.getGreeting(mood, holiday);
       setTexts({ slogan: data.slogan, message: data.message });
-      setImageUrl(data.imageUrl);
+      updateImageUrl(data.imageUrl);
       setSloganConfig(data.textConfig.slogan);
       setMessageConfig(data.textConfig.message);
     } finally {
@@ -87,7 +101,12 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const cycleBlockFont = useCallback(() => focusedState?.cycleFont(), [focusedState]);
   const cycleBlockColor = useCallback(() => focusedState?.cycleColor(), [focusedState]);
   const cycleBlockTextEffect = useCallback(() => focusedState?.cycleTextEffect(), [focusedState]);
+  const cycleBlockTextAlign = useCallback(() => focusedState?.cycleTextAlign(), [focusedState]);
   const setBlockFontSize = useCallback((size: number) => focusedState?.setFontSize(size), [focusedState]);
+
+  const setBlockText = useCallback((id: TextBlockId, text: string) => {
+    setTexts((prev) => ({ ...prev, [id]: text }));
+  }, []);
 
   const clearBlock = useCallback(() => {
     if (focusedBlockId) {
@@ -98,7 +117,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
 
   const refreshImage = useCallback(async () => {
     const data = await greetingApi.getImage(mood, holiday);
-    setImageUrl(data.imageUrl);
+    updateImageUrl(data.imageUrl);
   }, [mood, holiday]);
 
   const buildBlock = (
@@ -116,6 +135,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     textEffect: state.textEffect,
     textEffectStyle: state.textEffectStyle,
     strokeColor: state.strokeColor,
+    textAlign: state.textAlign,
     position: config?.position ?? "center",
     animatedStyle: state.animatedStyle,
   });
@@ -131,11 +151,15 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         textBlocks,
         imageUrl,
         loading,
+        imageLoading,
+        setImageLoaded,
         focusedBlockId,
         setFocusedBlockId,
+        setBlockText,
         cycleBlockFont,
         cycleBlockColor,
         cycleBlockTextEffect,
+        cycleBlockTextAlign,
         setBlockFontSize,
         clearBlock,
         refreshGreeting,

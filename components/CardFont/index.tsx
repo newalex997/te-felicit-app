@@ -1,8 +1,25 @@
+import { useRef, useMemo } from "react";
 import { styled } from "styled-components/native";
-import { TextBlock, useGreetingContext } from "../../context/GreetingContext";
+import { TextBlockId, useGreetingContext } from "../../context/GreetingContext";
 import { TextBlockConfigDto } from "../../api/Api";
-import { useTextElementState } from "./useTextElementState";
-import { DraggableText } from "./DraggableText";
+import { TextEditOverlay } from "./TextEditOverlay";
+import { TextBlockItem } from "./TextBlockItem";
+import { CardFontProvider, useCardFontContext } from "./CardFontContext";
+
+const POSITION_STYLES: Record<
+  TextBlockConfigDto["position"],
+  { justifyContent: string; alignItems: string }
+> = {
+  "top-left": { justifyContent: "flex-start", alignItems: "flex-start" },
+  "top-center": { justifyContent: "flex-start", alignItems: "center" },
+  "top-right": { justifyContent: "flex-start", alignItems: "flex-end" },
+  "center-left": { justifyContent: "center", alignItems: "flex-start" },
+  center: { justifyContent: "center", alignItems: "center" },
+  "center-right": { justifyContent: "center", alignItems: "flex-end" },
+  "bottom-left": { justifyContent: "flex-end", alignItems: "flex-start" },
+  "bottom-center": { justifyContent: "flex-end", alignItems: "center" },
+  "bottom-right": { justifyContent: "flex-end", alignItems: "flex-end" },
+};
 
 const Container = styled.View`
   flex: 1;
@@ -17,16 +34,6 @@ const BackgroundDismiss = styled.Pressable`
   bottom: 0;
 `;
 
-function getPositionStyle(position: TextBlockConfigDto["position"]) {
-  const [vertical, horizontal = "center"] = position.split("-");
-  return {
-    justifyContent:
-      vertical === "top" ? "flex-start" : vertical === "bottom" ? "flex-end" : "center",
-    alignItems:
-      horizontal === "left" ? "flex-start" : horizontal === "right" ? "flex-end" : "center",
-  };
-}
-
 const PositionLayer = styled.View`
   position: absolute;
   top: 0;
@@ -35,71 +42,81 @@ const PositionLayer = styled.View`
   bottom: 0;
 `;
 
-type TextBlockItemProps = {
-  block: TextBlock;
-  isSelected: boolean;
-  onTap: () => void;
-};
+function CardFontInner() {
+  const { textBlocks, setFocusedBlockId, setBlockText } = useGreetingContext();
+  const { editingBlockId, setEditingBlockId } = useCardFontContext();
+  const blockWidths = useRef<Partial<Record<TextBlockId, number>>>({});
 
-function TextBlockItem({ block, isSelected, onTap }: TextBlockItemProps) {
-  const state = useTextElementState({
-    fontSize: block.fontSize,
-    lineHeight: block.lineHeight,
-  });
-
-  return (
-    <DraggableText
-      state={state}
-      style={{
-        fontFamily: block.fontFamily,
-        color: block.color,
-        textAlign: "center",
-        ...block.textEffectStyle,
-      }}
-      animatedStyle={block.animatedStyle}
-      isSelected={isSelected}
-      onTap={onTap}
-      textEffect={block.textEffect}
-      strokeColor={block.strokeColor}
-    >
-      {block.text}
-    </DraggableText>
+  const visibleBlocks = useMemo(
+    () => textBlocks.filter((b) => b.text),
+    [textBlocks],
   );
-}
 
-export function CardFont() {
-  const { textBlocks, focusedBlockId, setFocusedBlockId } = useGreetingContext();
-
-  const visibleBlocks = textBlocks.filter((b) => b.text);
-
-  const positionGroups = visibleBlocks.reduce<Map<string, typeof visibleBlocks>>(
-    (map, block) => {
-      const key = block.position;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(block);
-      return map;
-    },
-    new Map(),
+  const positionGroups = useMemo(
+    () =>
+      visibleBlocks.reduce<Map<string, typeof visibleBlocks>>((map, block) => {
+        if (!map.has(block.position)) map.set(block.position, []);
+        map.get(block.position)!.push(block);
+        return map;
+      }, new Map()),
+    [visibleBlocks],
   );
+
+  const editingBlock = useMemo(
+    () =>
+      editingBlockId
+        ? visibleBlocks.find((b) => b.id === editingBlockId)
+        : null,
+    [editingBlockId, visibleBlocks],
+  );
+
+  function openEditing(blockId: TextBlockId) {
+    setFocusedBlockId(blockId);
+    setEditingBlockId(blockId);
+  }
+
+  function closeEditing() {
+    setFocusedBlockId(null);
+    setEditingBlockId(null);
+  }
 
   return (
     <Container>
-      <BackgroundDismiss onPress={() => setFocusedBlockId(null)} />
+      <BackgroundDismiss onPress={closeEditing} />
       {Array.from(positionGroups.entries()).map(([position, blocks]) => (
         <PositionLayer
           key={position}
-          style={getPositionStyle(position as TextBlockConfigDto["position"])}
+          style={POSITION_STYLES[position as TextBlockConfigDto["position"]]}
         >
           {blocks.map((block) => (
             <TextBlockItem
-              key={`${block.id}-${block.text}`}
+              key={block.id}
               block={block}
-              isSelected={focusedBlockId === block.id}
-              onTap={() => setFocusedBlockId(block.id)}
+              isEditing={editingBlockId === block.id}
+              onTap={() => openEditing(block.id)}
+              onWidthChange={(width) => {
+                blockWidths.current[block.id] = width;
+              }}
             />
           ))}
         </PositionLayer>
       ))}
+      {editingBlock && (
+        <TextEditOverlay
+          block={editingBlock}
+          textWidth={blockWidths.current[editingBlock.id]}
+          onTextChange={(text) => setBlockText(editingBlock.id, text)}
+          onEditEnd={closeEditing}
+        />
+      )}
     </Container>
+  );
+}
+
+export function CardFont() {
+  return (
+    <CardFontProvider>
+      <CardFontInner />
+    </CardFontProvider>
   );
 }

@@ -6,45 +6,50 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { styled } from "styled-components/native";
-const SLIDER_HEIGHT = 150;
-const TRACK_WIDTH_MAX = 26;
-const TRACK_WIDTH_MIN = 4;
-const TAPER = (TRACK_WIDTH_MAX - TRACK_WIDTH_MIN) / 2;
+
+const SLIDER_WIDTH = 150;
+const TRACK_HEIGHT_MAX = 26;
+const TRACK_HEIGHT_MIN = 4;
+const TAPER = (TRACK_HEIGHT_MAX - TRACK_HEIGHT_MIN) / 2;
+
+const FONT_SIZE_MIN_RATIO = 0.8;
+const FONT_SIZE_MAX_RATIO = 1.2;
+const MIN_FILL_RATIO = 0.2;
 
 const Container = styled.View`
-  width: ${TRACK_WIDTH_MAX}px;
-  height: ${SLIDER_HEIGHT}px;
-  margin: 8px 0px 8px 4px;
+  width: ${SLIDER_WIDTH}px;
+  height: ${TRACK_HEIGHT_MAX}px;
+  margin: 0px 8px;
+`;
+
+const TrackFill = styled(Animated.View)`
+  position: absolute;
+  left: 0;
+  height: 0px;
+  width: 0px;
 `;
 
 const trackBackgroundStyle = {
   position: "absolute" as const,
-  bottom: 0,
   left: 0,
-  width: TRACK_WIDTH_MIN,
-  height: 0,
-  borderTopWidth: SLIDER_HEIGHT,
-  borderTopColor: "rgba(255, 255, 255, 0.25)",
-  borderLeftWidth: TAPER,
-  borderLeftColor: "transparent",
-  borderRightWidth: TAPER,
-  borderRightColor: "transparent",
+  top: 0,
+  height: TRACK_HEIGHT_MIN,
+  width: 0,
+  borderRightWidth: SLIDER_WIDTH,
+  borderRightColor: "rgba(255, 255, 255, 0.25)",
+  borderTopWidth: TAPER,
+  borderTopColor: "transparent",
+  borderBottomWidth: TAPER,
+  borderBottomColor: "transparent",
 };
 
-const TrackFill = styled(Animated.View)`
-  position: absolute;
-  bottom: 0;
-  width: ${TRACK_WIDTH_MIN}px;
-  height: 0px;
-`;
-
-function toThumbY(size: number, fontMin: number, fontMax: number) {
+function toThumbX(size: number, fontMin: number, fontMax: number) {
   const clamped = Math.max(fontMin, Math.min(fontMax, size));
-  return SLIDER_HEIGHT * (1 - (clamped - fontMin) / (fontMax - fontMin));
+  return SLIDER_WIDTH * ((clamped - fontMin) / (fontMax - fontMin));
 }
 
-function toFontSize(y: number, fontMin: number, fontMax: number) {
-  const ratio = 1 - Math.max(0, Math.min(SLIDER_HEIGHT, y)) / SLIDER_HEIGHT;
+function toFontSize(x: number, fontMin: number, fontMax: number) {
+  const ratio = Math.max(0, Math.min(SLIDER_WIDTH, x)) / SLIDER_WIDTH;
   return Math.round(fontMin + ratio * (fontMax - fontMin));
 }
 
@@ -54,56 +59,49 @@ type Props = {
   onChange: (size: number) => void;
 };
 
-const FONT_SIZE_MIN_RATIO = 0.8;
-const FONT_SIZE_MAX_RATIO = 1.2;
-const MIN_FILL_RATIO = 0.2;
-
 export function FontSizeSlider({ value, baseFontSize, onChange }: Props) {
   const fontMin = Math.round(baseFontSize * FONT_SIZE_MIN_RATIO);
   const fontMax = Math.round(baseFontSize * FONT_SIZE_MAX_RATIO);
   const isDragging = useRef(false);
-  const thumbY = useSharedValue(toThumbY(value, fontMin, fontMax));
-  const startY = useSharedValue(0);
+  const thumbX = useSharedValue(toThumbX(value, fontMin, fontMax));
+  const startX = useSharedValue(0);
 
   useEffect(() => {
     if (!isDragging.current) {
-      thumbY.value = toThumbY(value, fontMin, fontMax);
+      thumbX.value = toThumbX(value, fontMin, fontMax);
     }
-  }, [value, fontMin, fontMax, thumbY]);
+  }, [value, fontMin, fontMax, thumbX]);
 
   const panGesture = Gesture.Pan()
-    .hitSlop({ horizontal: 20 })
+    .hitSlop({ vertical: 20 })
     .runOnJS(true)
     .onBegin(() => {
       isDragging.current = true;
-      startY.value = thumbY.value;
+      startX.value = thumbX.value;
     })
     .onUpdate((e) => {
-      const newY = Math.max(
+      const newX = Math.max(
         0,
-        Math.min(SLIDER_HEIGHT, startY.value + e.translationY),
+        Math.min(SLIDER_WIDTH, startX.value + e.translationX),
       );
-      thumbY.value = newY;
-      onChange(toFontSize(newY, fontMin, fontMax));
+      thumbX.value = newX;
+      onChange(toFontSize(newX, fontMin, fontMax));
     })
     .onFinalize(() => {
       isDragging.current = false;
     });
 
   const fillAnimatedStyle = useAnimatedStyle(() => {
-    const fillHeight = Math.max(
-      SLIDER_HEIGHT * MIN_FILL_RATIO,
-      SLIDER_HEIGHT - thumbY.value,
-    );
-    const taperAmount = TAPER * (fillHeight / SLIDER_HEIGHT);
+    const fillWidth = Math.max(SLIDER_WIDTH * MIN_FILL_RATIO, thumbX.value);
+    const taperAmount = TAPER * (fillWidth / SLIDER_WIDTH);
     return {
-      left: TAPER - taperAmount,
-      borderTopWidth: fillHeight,
-      borderTopColor: "rgba(255, 255, 255, 0.85)",
-      borderLeftWidth: taperAmount,
-      borderLeftColor: "transparent",
-      borderRightWidth: taperAmount,
-      borderRightColor: "transparent",
+      top: TAPER - taperAmount,
+      borderRightWidth: fillWidth,
+      borderRightColor: "rgba(255, 255, 255, 0.85)",
+      borderTopWidth: taperAmount,
+      borderTopColor: "transparent",
+      borderBottomWidth: taperAmount,
+      borderBottomColor: "transparent",
     };
   });
 
