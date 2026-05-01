@@ -26,9 +26,10 @@ const cardViewStyle = { flex: 1, backgroundColor: "black" } as const;
 
 type Props = {
   cardStyle: AnimatedStyle<ViewStyle>;
+  onSave: () => void;
 };
 
-export function GreetingCard({ cardStyle }: Props) {
+export function GreetingCard({ cardStyle, onSave }: Props) {
   const { imageUrl, setImageLoaded } = useGreetingContext();
   const { cardRef } = useShareContext();
   const opacity = useSharedValue(0);
@@ -64,7 +65,7 @@ export function GreetingCard({ cardStyle }: Props) {
       </CardFrame>
 
       <CardButtonsContainer>
-        <CardImageButtons />
+        <CardImageButtons onSave={onSave} />
       </CardButtonsContainer>
     </Animated.View>
   );

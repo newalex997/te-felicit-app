@@ -6,5 +6,10 @@
   "holidaysLabel": "Ocasions",
   "moodsLabel": "Moods",
   "offlineTitle": "No Internet Connection",
-  "offlineSubtitle": "Please check your connection and try again."
+  "offlineSubtitle": "Please check your connection and try again.",
+  "save": "Save",
+  "settings": "Settings",
+  "language": "Language",
+  "appInfo": "App Info",
+  "version": "Version"
 }

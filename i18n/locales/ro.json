@@ -6,5 +6,10 @@
   "holidaysLabel": "Ocazii",
   "moodsLabel": "Stări",
   "offlineTitle": "Fără conexiune la internet",
-  "offlineSubtitle": "Verifică conexiunea și încearcă din nou."
+  "offlineSubtitle": "Verifică conexiunea și încearcă din nou.",
+  "save": "Salvează",
+  "settings": "Setări",
+  "language": "Limbă",
+  "appInfo": "Despre aplicație",
+  "version": "Versiune"
 }

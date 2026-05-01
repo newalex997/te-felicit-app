@@ -14,7 +14,12 @@
       "infoPlist": {
         "CFBundleDevelopmentRegion": "ro",
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleLocalizations": ["ro", "en", "ru", "it"]
+        "CFBundleLocalizations": [
+          "ro",
+          "en",
+          "ru",
+          "it"
+        ]
       }
     },
     "android": {
@@ -41,7 +46,8 @@
           }
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

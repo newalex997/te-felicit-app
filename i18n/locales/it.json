@@ -6,5 +6,10 @@
   "holidaysLabel": "Occasioni",
   "moodsLabel": "Stati d'animo",
   "offlineTitle": "Nessuna connessione a Internet",
-  "offlineSubtitle": "Controlla la connessione e riprova."
+  "offlineSubtitle": "Controlla la connessione e riprova.",
+  "save": "Salva",
+  "settings": "Impostazioni",
+  "language": "Lingua",
+  "appInfo": "Info app",
+  "version": "Versione"
 }

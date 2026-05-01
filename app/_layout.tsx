@@ -8,13 +8,16 @@ import { theme } from "../theme";
 import { I18nProvider } from "../context/I18nContext";
 import { GreetingProvider } from "../context/GreetingContext";
 import { ShareProvider } from "../context/ShareContext";
+import { SavedCardsProvider } from "../context/SavedCardsContext";
 import { OfflineScreen } from "../components/OfflineScreen";
 
 function AppProviders({ children }: { children: React.ReactNode }) {
   return (
-    <GreetingProvider>
-      <ShareProvider>{children}</ShareProvider>
-    </GreetingProvider>
+    <SavedCardsProvider>
+      <GreetingProvider>
+        <ShareProvider>{children}</ShareProvider>
+      </GreetingProvider>
+    </SavedCardsProvider>
   );
 }
 

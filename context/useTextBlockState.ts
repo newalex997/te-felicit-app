@@ -46,6 +46,11 @@ export const FONTS: string[] = [
 export type TextEffect = "none" | "shadow" | "outline" | "border";
 export type TextAlign = "left" | "center" | "right";
 
+export type BlockConfig = TextBlockConfigDto & {
+  fontFamily?: string;
+  textAlign?: TextAlign;
+};
+
 function getContrastColor(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16) / 255;
   const g = parseInt(hex.slice(3, 5), 16) / 255;
@@ -90,7 +95,7 @@ function computeTextEffectStyle(effect: TextEffect, color: string): TextStyle {
 const FADE_DURATION = 180;
 const LINE_HEIGHT_RATIO = 1.4;
 
-export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
+export function useTextBlockState(initialConfig: BlockConfig | null) {
   const [fontIndex, setFontIndex] = useState(0);
   const [fontSize, setFontSize] = useState<number>(
     initialConfig?.fontSize ?? 0,
@@ -109,11 +114,14 @@ export function useTextBlockState(initialConfig: TextBlockConfigDto | null) {
   }));
 
   useEffect(() => {
-    setFontIndex(0);
+    const savedFontIdx = initialConfig?.fontFamily
+      ? FONTS.indexOf(initialConfig.fontFamily)
+      : -1;
+    setFontIndex(savedFontIdx >= 0 ? savedFontIdx : 0);
     setFontSize(initialConfig?.fontSize ?? 0);
     setColor(initialConfig?.color ?? TEXT_COLORS[0]);
     setTextEffect(initialConfig?.textEffect ?? "none");
-    setTextAlign("center");
+    setTextAlign(initialConfig?.textAlign ?? "center");
   }, [initialConfig]);
 
   const cycleFont = useCallback(() => {

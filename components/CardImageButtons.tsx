@@ -1,25 +1,38 @@
 import { Feather } from "@expo/vector-icons";
+import { Pressable } from "react-native";
+import { styled } from "styled-components/native";
 import { useGreetingContext } from "../context/GreetingContext";
-import { CardButtonGroup, CardIconButton } from "../styles/index.styles";
-import { CARD_BUTTON_GRADIENT_COLORS, CARD_BUTTON_GRADIENT_END, CARD_BUTTON_GRADIENT_START } from "../constants/gradients";
 
-export function CardImageButtons() {
-  const { refreshImage, imageLoading } = useGreetingContext();
-  const isDisabled = imageLoading;
+type Props = {
+  onSave: () => void;
+};
+
+const Group = styled.View`
+  gap: 8px;
+`;
+
+const Button = styled(Pressable)`
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  background-color: rgba(255, 255, 255, 0.9);
+  align-items: center;
+  justify-content: center;
+`;
+
+export function CardImageButtons({ onSave }: Props) {
+  const { refreshImage, imageLoading, loading } = useGreetingContext();
+
+  if (imageLoading || loading) return null;
 
   return (
-    <CardButtonGroup
-      colors={CARD_BUTTON_GRADIENT_COLORS}
-      start={CARD_BUTTON_GRADIENT_START}
-      end={CARD_BUTTON_GRADIENT_END}
-    >
-      <CardIconButton
-        onPress={refreshImage}
-        disabled={isDisabled}
-        style={{ opacity: isDisabled ? 0.4 : 1 }}
-      >
-        <Feather name="refresh-cw" size={16} color="white" />
-      </CardIconButton>
-    </CardButtonGroup>
+    <Group>
+      <Button onPress={onSave}>
+        <Feather name="heart" size={18} color="#1a1a2e" />
+      </Button>
+      <Button onPress={refreshImage}>
+        <Feather name="refresh-cw" size={18} color="#1a1a2e" />
+      </Button>
+    </Group>
   );
 }

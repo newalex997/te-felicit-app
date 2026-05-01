@@ -1,13 +1,14 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { greetingApi } from "../api/greeting";
 import { TextBlockConfigDto } from "../api/Api";
-import { TextAlign, TextBlockState, TextEffect, useTextBlockState } from "./useTextBlockState";
+import {
+  BlockConfig,
+  TextAlign,
+  TextBlockState,
+  TextEffect,
+  useTextBlockState,
+} from "./useTextBlockState";
+import { SavedCard } from "./SavedCardsContext";
 
 export type TextBlockId = "slogan" | "message";
 
@@ -48,6 +49,7 @@ interface GreetingContextValue {
   setMood: (mood: string | undefined) => void;
   holiday: string | undefined;
   setHoliday: (holiday: string | undefined) => void;
+  restoreCard: (card: SavedCard) => void;
 }
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
@@ -67,19 +69,24 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   }
 
   const setImageLoaded = useCallback(() => setImageLoading(false), []);
-  const [focusedBlockId, setFocusedBlockId] = useState<TextBlockId | null>(null);
+
+  const [focusedBlockId, setFocusedBlockId] = useState<TextBlockId | null>(
+    null,
+  );
 
   const [mood, setMood] = useState<string | undefined>(undefined);
   const [holiday, setHoliday] = useState<string | undefined>(undefined);
-  const [sloganConfig, setSloganConfig] = useState<TextBlockConfigDto | null>(null);
-  const [messageConfig, setMessageConfig] = useState<TextBlockConfigDto | null>(null);
+  const [sloganConfig, setSloganConfig] = useState<BlockConfig | null>(null);
+  const [messageConfig, setMessageConfig] = useState<BlockConfig | null>(null);
 
   const sloganState = useTextBlockState(sloganConfig);
   const messageState = useTextBlockState(messageConfig);
   const focusedState =
-    focusedBlockId === "slogan" ? sloganState :
-    focusedBlockId === "message" ? messageState :
-    null;
+    focusedBlockId === "slogan"
+      ? sloganState
+      : focusedBlockId === "message"
+        ? messageState
+        : null;
 
   const refreshGreeting = useCallback(async () => {
     setLoading(true);
@@ -98,11 +105,11 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     refreshGreeting();
   }, [refreshGreeting]);
 
-  const cycleBlockFont = useCallback(() => focusedState?.cycleFont(), [focusedState]);
-  const cycleBlockColor = useCallback(() => focusedState?.cycleColor(), [focusedState]);
-  const cycleBlockTextEffect = useCallback(() => focusedState?.cycleTextEffect(), [focusedState]);
-  const cycleBlockTextAlign = useCallback(() => focusedState?.cycleTextAlign(), [focusedState]);
-  const setBlockFontSize = useCallback((size: number) => focusedState?.setFontSize(size), [focusedState]);
+  const cycleBlockFont = () => focusedState?.cycleFont();
+  const cycleBlockColor = () => focusedState?.cycleColor();
+  const cycleBlockTextEffect = () => focusedState?.cycleTextEffect();
+  const cycleBlockTextAlign = () => focusedState?.cycleTextAlign();
+  const setBlockFontSize = (size: number) => focusedState?.setFontSize(size);
 
   const setBlockText = useCallback((id: TextBlockId, text: string) => {
     setTexts((prev) => ({ ...prev, [id]: text }));
@@ -119,6 +126,24 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     const data = await greetingApi.getImage(mood, holiday);
     updateImageUrl(data.imageUrl);
   }, [mood, holiday]);
+
+  const blockToConfig = (block: SavedCard["blocks"][number]): BlockConfig => ({
+    fontSize: block.fontSize,
+    color: block.color,
+    textEffect: block.textEffect,
+    position: block.position,
+    fontFamily: block.fontFamily,
+    textAlign: block.textAlign,
+  });
+
+  const restoreCard = useCallback((card: SavedCard) => {
+    updateImageUrl(card.imageUrl);
+    const slogan = card.blocks.find((b) => b.id === "slogan");
+    const message = card.blocks.find((b) => b.id === "message");
+    setTexts({ slogan: slogan?.text ?? "", message: message?.text ?? "" });
+    if (slogan) setSloganConfig(blockToConfig(slogan));
+    if (message) setMessageConfig(blockToConfig(message));
+  }, []);
 
   const buildBlock = (
     id: TextBlockId,
@@ -168,6 +193,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         setMood,
         holiday,
         setHoliday,
+        restoreCard,
       }}
     >
       {children}
