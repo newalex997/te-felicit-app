@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,7 +7,7 @@ import { useShareContext } from "../context/ShareContext";
 import { useI18n } from "../context/I18nContext";
 import { useSavedCards, SavedCard } from "../context/SavedCardsContext";
 import { useCardSwipe } from "../hooks/useCardSwipe";
-import { Container } from "../styles/index.styles";
+import { Container, Header, SectionLabel, HeaderActions, IconButton } from "../styles/index.styles";
 import { GreetingCard } from "../components/GreetingCard";
 import { ActionButtons } from "../components/ActionButtons";
 import { MoodPicker } from "../components/MoodPicker";
@@ -65,23 +64,17 @@ export default function Index() {
 
   return (
     <Container>
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <Text style={styles.sectionLabel}>{t("holidaysLabel").toUpperCase()}</Text>
-        <View style={styles.headerActions}>
-          <Pressable
-            onPress={() => router.push("/saved" as never)}
-            style={styles.iconButton}
-          >
+      <Header paddingTop={insets.top + 8}>
+        <SectionLabel>{t("holidaysLabel").toUpperCase()}</SectionLabel>
+        <HeaderActions>
+          <IconButton onPress={() => router.push("/saved" as never)}>
             <AntDesign name="heart" size={17} color="#fff" />
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/settings" as never)}
-            style={styles.iconButton}
-          >
+          </IconButton>
+          <IconButton onPress={() => router.push("/settings" as never)}>
             <Feather name="settings" size={17} color="#fff" />
-          </Pressable>
-        </View>
-      </View>
+          </IconButton>
+        </HeaderActions>
+      </Header>
       <MoodPicker onSelect={handleMoodSelect} />
       <GreetingCard cardStyle={cardStyle} onSave={handleSave} />
       <ActionButtons
@@ -95,31 +88,3 @@ export default function Index() {
     </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingBottom: 10,
-  },
-  sectionLabel: {
-    color: "rgba(255,255,255,0.45)",
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1.2,
-  },
-  headerActions: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  iconButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

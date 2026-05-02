@@ -10,6 +10,8 @@ import { GreetingProvider } from "../context/GreetingContext";
 import { ShareProvider } from "../context/ShareContext";
 import { SavedCardsProvider } from "../context/SavedCardsContext";
 import { OfflineScreen } from "../components/OfflineScreen";
+import { useState, useEffect } from "react";
+import { registerRestartHandler } from "../utils/restartApp";
 
 function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -36,13 +38,18 @@ function AppContent() {
 
 export default function RootLayout() {
   const fontsLoaded = useAppFonts();
+  const [restartKey, setRestartKey] = useState(0);
+
+  useEffect(() => {
+    registerRestartHandler(() => setRestartKey((k) => k + 1));
+  }, []);
 
   if (!fontsLoaded) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider theme={theme}>
-        <I18nProvider>
+        <I18nProvider key={restartKey}>
           <AppProviders>
             <AppContent />
           </AppProviders>

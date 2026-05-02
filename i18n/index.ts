@@ -17,10 +17,9 @@ export function detectLocale(): SupportedLocale {
   const locales = Localization.getLocales();
   for (const locale of locales) {
     const lang = locale.languageCode ?? "";
-    // Map "ua" device tag to "uk" (ISO 639-1 for Ukrainian)
-    const mapped = lang === "ua" ? "uk" : lang;
-    if (SUPPORTED_LOCALES.includes(mapped as SupportedLocale)) {
-      return mapped as SupportedLocale;
+
+    if (SUPPORTED_LOCALES.includes(lang as SupportedLocale)) {
+      return lang as SupportedLocale;
     }
   }
   return "en";

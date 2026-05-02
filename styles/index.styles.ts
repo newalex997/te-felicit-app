@@ -84,3 +84,34 @@ export const ShareText = styled.Text`
   font-size: ${({ theme }) => theme.fontSizes.md}px;
   font-weight: 600;
 `;
+
+export const Header = styled.View<{ paddingTop: number }>`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 10px;
+  padding-top: ${({ paddingTop }) => paddingTop}px;
+`;
+
+export const SectionLabel = styled.Text`
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+`;
+
+export const HeaderActions = styled.View`
+  flex-direction: row;
+  gap: 8px;
+`;
+
+export const IconButton = styled.Pressable`
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  background-color: rgba(255, 255, 255, 0.15);
+  align-items: center;
+  justify-content: center;
+`;
