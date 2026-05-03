@@ -36,7 +36,7 @@ export function GreetingCard({ cardStyle, onSave }: Props) {
 
   useEffect(() => {
     opacity.value = 0;
-  }, [imageUrl, opacity]);
+  }, [imageUrl]);
 
   function handleImageLoad() {
     setImageLoaded();

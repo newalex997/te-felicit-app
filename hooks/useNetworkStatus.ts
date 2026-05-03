@@ -10,7 +10,8 @@ export function useNetworkStatus() {
     async function check() {
       const state = await Network.getNetworkStateAsync();
       if (!cancelled) {
-        setIsConnected(state.isConnected ?? true);
+        const next = state.isConnected ?? true;
+        setIsConnected((prev) => (prev === next ? prev : next));
       }
     }
 

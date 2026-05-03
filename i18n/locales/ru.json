@@ -11,5 +11,11 @@
   "settings": "Настройки",
   "language": "Язык",
   "appInfo": "О приложении",
-  "version": "Версия"
+  "version": "Версия",
+  "privacyPolicy": "Политика конфиденциальности",
+  "termsAndConditions": "Условия использования",
+  "contactUs": "Связаться с нами",
+  "savedCards": "Сохранённые открытки",
+  "noSavedCards": "Нет сохранённых открыток",
+  "delete": "Удалить"
 }

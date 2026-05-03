@@ -10,7 +10,6 @@ export const Container = styled.View`
 export const CardFrame = styled.View`
   flex: 1;
   margin: ${({ theme }) => theme.space.lg}px;
-  margin-top: ${({ theme }) => theme.space.lg}px;
   border-radius: ${({ theme }) => theme.radii.md}px;
   overflow: hidden;
 `;
@@ -34,12 +33,6 @@ export const CardButtonsContainer = styled.View`
   z-index: 10;
 `;
 
-export const CardButtonGroup = styled(LinearGradient)`
-  gap: ${({ theme }) => theme.space.sm}px;
-  padding: ${({ theme }) => theme.space.sm}px;
-  border-radius: ${({ theme }) => theme.radii.lg}px;
-  align-items: center;
-`;
 
 export const CardIconButton = styled.Pressable`
   width: 36px;

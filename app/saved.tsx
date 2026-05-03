@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { useSavedCards, SavedCard } from "../context/SavedCardsContext";
 import { useGreetingContext } from "../context/GreetingContext";
+import { useI18n } from "../context/I18nContext";
 import {
   Container,
   Header,
@@ -27,6 +28,7 @@ export default function SavedScreen() {
   const insets = useSafeAreaInsets();
   const { savedCards, removeCard } = useSavedCards();
   const { restoreCard } = useGreetingContext();
+  const { t } = useI18n();
 
   function handleLoad(card: SavedCard) {
     restoreCard(card);
@@ -39,11 +41,11 @@ export default function SavedScreen() {
         <BackButton onPress={() => router.back()} hitSlop={8}>
           <Feather name="arrow-left" size={20} color="#fff" />
         </BackButton>
-        <Title>Saved Cards</Title>
+        <Title>{t("savedCards")}</Title>
       </Header>
 
       {savedCards.length === 0 ? (
-        <EmptyText>No saved cards yet</EmptyText>
+        <EmptyText>{t("noSavedCards")}</EmptyText>
       ) : (
         <FlatList
           data={savedCards}
@@ -67,7 +69,7 @@ export default function SavedScreen() {
                     <DateText>{savedDate}</DateText>
                   </CardContent>
                   <DeleteButton onPress={() => removeCard(item.id)} hitSlop={8}>
-                    <DeleteText>Delete</DeleteText>
+                    <DeleteText>{t("delete")}</DeleteText>
                   </DeleteButton>
                 </CardOverlay>
               </Card>

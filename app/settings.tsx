@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { useI18n } from "../context/I18nContext";
 import { LanguageChooser } from "../components/LanguageChooser";
+import { AppInfoSection } from "../components/AppInfoSection";
 import {
   Container,
   Header,
@@ -11,10 +12,6 @@ import {
   Title,
   Content,
   SectionLabel,
-  Card,
-  Row,
-  RowLabel,
-  RowValue,
 } from "../styles/settings.styles";
 
 export default function SettingsScreen() {
@@ -35,13 +32,7 @@ export default function SettingsScreen() {
           <SectionLabel>{t("language").toUpperCase()}</SectionLabel>
           <LanguageChooser />
 
-          <SectionLabel marginTop={28}>{t("appInfo").toUpperCase()}</SectionLabel>
-          <Card>
-            <Row>
-              <RowLabel>{t("version")}</RowLabel>
-              <RowValue>1.0.4</RowValue>
-            </Row>
-          </Card>
+          <AppInfoSection />
         </Content>
       </ScrollView>
     </Container>

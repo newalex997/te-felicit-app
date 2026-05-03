@@ -11,5 +11,11 @@
   "settings": "Setări",
   "language": "Limbă",
   "appInfo": "Despre aplicație",
-  "version": "Versiune"
+  "version": "Versiune",
+  "privacyPolicy": "Politică de confidențialitate",
+  "termsAndConditions": "Termeni și condiții",
+  "contactUs": "Contactează-ne",
+  "savedCards": "Carduri salvate",
+  "noSavedCards": "Nu există carduri salvate",
+  "delete": "Șterge"
 }

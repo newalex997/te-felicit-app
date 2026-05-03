@@ -38,12 +38,12 @@ export function CardFontButtons() {
   const EffectButton = textEffectActive ? ActiveIconButton : CardIconButton;
 
   const currentTextAlign = focusedBlock?.textAlign ?? "center";
-  const alignIconName =
-    currentTextAlign === "left"
-      ? "format-align-left"
-      : currentTextAlign === "right"
-        ? "format-align-right"
-        : "format-align-center";
+  const ALIGN_ICON: Record<typeof currentTextAlign, string> = {
+    left: "format-align-left",
+    center: "format-align-center",
+    right: "format-align-right",
+  };
+  const alignIconName = ALIGN_ICON[currentTextAlign];
 
   return (
     <Row>

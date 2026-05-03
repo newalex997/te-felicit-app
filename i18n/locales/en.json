@@ -11,5 +11,11 @@
   "settings": "Settings",
   "language": "Language",
   "appInfo": "App Info",
-  "version": "Version"
+  "version": "Version",
+  "privacyPolicy": "Privacy Policy",
+  "termsAndConditions": "Terms & Conditions",
+  "contactUs": "Contact Us",
+  "savedCards": "Saved Cards",
+  "noSavedCards": "No saved cards yet",
+  "delete": "Delete"
 }

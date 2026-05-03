@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { greetingApi } from "../api/greeting";
 import { TextBlockConfigDto } from "../api/Api";
+import { useI18n } from "./I18nContext";
 import {
   BlockConfig,
   TextAlign,
@@ -54,6 +55,17 @@ interface GreetingContextValue {
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
 
+function blockToConfig(block: SavedCard["blocks"][number]): BlockConfig {
+  return {
+    fontSize: block.fontSize,
+    color: block.color,
+    textEffect: block.textEffect,
+    position: block.position,
+    fontFamily: block.fontFamily,
+    textAlign: block.textAlign,
+  };
+}
+
 export function GreetingProvider({ children }: { children: React.ReactNode }) {
   const [texts, setTexts] = useState<Record<TextBlockId, string>>({
     slogan: "",
@@ -74,6 +86,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     null,
   );
 
+  const { locale } = useI18n();
   const [mood, setMood] = useState<string | undefined>(undefined);
   const [holiday, setHoliday] = useState<string | undefined>(undefined);
   const [sloganConfig, setSloganConfig] = useState<BlockConfig | null>(null);
@@ -99,7 +112,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [mood, holiday]);
+  }, [mood, holiday, locale]);
 
   useEffect(() => {
     refreshGreeting();
@@ -126,15 +139,6 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     const data = await greetingApi.getImage(mood, holiday);
     updateImageUrl(data.imageUrl);
   }, [mood, holiday]);
-
-  const blockToConfig = (block: SavedCard["blocks"][number]): BlockConfig => ({
-    fontSize: block.fontSize,
-    color: block.color,
-    textEffect: block.textEffect,
-    position: block.position,
-    fontFamily: block.fontFamily,
-    textAlign: block.textAlign,
-  });
 
   const restoreCard = useCallback((card: SavedCard) => {
     updateImageUrl(card.imageUrl);

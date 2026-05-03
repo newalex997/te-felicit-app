@@ -19,22 +19,20 @@ const LANGUAGE_FLAGS: Record<SupportedLocale, string> = {
 };
 
 export function LanguageChooser() {
-  const { locale, setLocalePreference } = useI18n();
+  const { locale, setLocale } = useI18n();
 
   return (
     <Card>
       {SUPPORTED_LOCALES.map((lang, index) => {
-        const selected = locale === lang;
         const isLast = index === SUPPORTED_LOCALES.length - 1;
-        const option = { key: lang, label: LANGUAGE_LABELS[lang], flag: LANGUAGE_FLAGS[lang] };
         return (
-          <React.Fragment key={option.key}>
-            <Row onPress={() => setLocalePreference(option.key)}>
+          <React.Fragment key={lang}>
+            <Row onPress={() => setLocale(lang)}>
               <RowLeft>
-                <Flag>{option.flag}</Flag>
-                <RowLabel>{option.label}</RowLabel>
+                <Flag>{LANGUAGE_FLAGS[lang]}</Flag>
+                <RowLabel>{LANGUAGE_LABELS[lang]}</RowLabel>
               </RowLeft>
-              {selected && <Feather name="check" size={18} color="#fff" />}
+              {locale === lang && <Feather name="check" size={18} color="#fff" />}
             </Row>
             {!isLast && <Divider />}
           </React.Fragment>

@@ -11,5 +11,11 @@
   "settings": "Impostazioni",
   "language": "Lingua",
   "appInfo": "Info app",
-  "version": "Versione"
+  "version": "Versione",
+  "privacyPolicy": "Informativa sulla privacy",
+  "termsAndConditions": "Termini e condizioni",
+  "contactUs": "Contattaci",
+  "savedCards": "Biglietti salvati",
+  "noSavedCards": "Nessun biglietto salvato",
+  "delete": "Elimina"
 }

@@ -3,7 +3,8 @@ import { ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { styled } from "styled-components/native";
 import { greetingApi } from "../api/greeting";
-import { MoodOptionDto } from "@/api/Api";
+import { MoodOptionDto } from "../api/Api";
+import { useI18n } from "../context/I18nContext";
 
 export type MoodSelection = { mood?: string; holidayMood?: string };
 
@@ -51,6 +52,7 @@ const ClearButton = styled.Pressable`
 
 export function MoodPicker({ onSelect }: Props) {
   const scrollRef = useRef<ScrollView>(null);
+  const { locale } = useI18n();
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [selectedHolidayMood, setSelectedHolidayMood] = useState<string | null>(null);
   const [moods, setMoods] = useState<MoodOptionDto[]>([]);
@@ -61,7 +63,7 @@ export function MoodPicker({ onSelect }: Props) {
       setMoods(data.moods.filter((m) => m.id !== "all"));
       setHolidayMoods(data.holidayMoods);
     });
-  }, []);
+  }, [locale]);
 
   function notify(mood: string | null, holidayMood: string | null) {
     onSelect?.({ mood: mood ?? undefined, holidayMood: holidayMood ?? undefined });

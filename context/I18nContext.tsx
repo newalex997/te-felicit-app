@@ -1,68 +1,38 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { AppState, AppStateStatus } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { i18n, detectLocale, SUPPORTED_LOCALES, type SupportedLocale } from "../i18n";
+import { i18n, resolveLocale, LOCALE_STORAGE_KEY, type SupportedLocale } from "../i18n";
 import { setApiLocale } from "../api/client";
-import { triggerAppRestart } from "../utils/restartApp";
-
-const LOCALE_KEY = "@language_preference";
-
-export type LocalePreference = SupportedLocale | "system";
 
 interface I18nContextValue {
   locale: SupportedLocale;
-  localePreference: LocalePreference;
-  setLocalePreference: (pref: LocalePreference) => Promise<void>;
+  setLocale: (locale: SupportedLocale) => void;
   t: (key: string) => string;
 }
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-function applyLocale(locale: SupportedLocale) {
-  i18n.locale = locale;
-  setApiLocale(locale);
-}
-
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [localePreference, setLocalePreferenceState] = useState<LocalePreference>("system");
-  const [locale, setLocale] = useState<SupportedLocale>(() => {
-    const sys = detectLocale();
-    applyLocale(sys);
-    return sys;
-  });
+  const [locale, setLocaleState] = useState<SupportedLocale | null>(null);
 
-  // Load persisted preference once on mount
   useEffect(() => {
-    AsyncStorage.getItem(LOCALE_KEY).then((stored) => {
-      if (stored && stored !== "system" && SUPPORTED_LOCALES.includes(stored as SupportedLocale)) {
-        const pref = stored as SupportedLocale;
-        setLocalePreferenceState(pref);
-        setLocale(pref);
-        applyLocale(pref);
-      }
-      // null or "system" → keep the already-detected locale
+    resolveLocale().then((resolved) => {
+      i18n.locale = resolved;
+      setApiLocale(resolved);
+      setLocaleState(resolved);
     });
   }, []);
 
-  // Re-sync with phone language when app comes to foreground (only if system preference)
-  useEffect(() => {
-    const sub = AppState.addEventListener("change", (state: AppStateStatus) => {
-      if (state === "active" && localePreference === "system") {
-        const sys = detectLocale();
-        setLocale(sys);
-        applyLocale(sys);
-      }
-    });
-    return () => sub.remove();
-  }, [localePreference]);
-
-  async function setLocalePreference(pref: LocalePreference) {
-    await AsyncStorage.setItem(LOCALE_KEY, pref);
-    triggerAppRestart();
+  function setLocale(newLocale: SupportedLocale) {
+    AsyncStorage.setItem(LOCALE_STORAGE_KEY, newLocale);
+    i18n.locale = newLocale;
+    setApiLocale(newLocale);
+    setLocaleState(newLocale);
   }
 
+  if (locale === null) return null;
+
   return (
-    <I18nContext.Provider value={{ locale, localePreference, setLocalePreference, t: (key) => i18n.t(key) }}>
+    <I18nContext.Provider value={{ locale, setLocale, t: (key) => i18n.t(key, { locale }) }}>
       {children}
     </I18nContext.Provider>
   );
