@@ -7,7 +7,13 @@ import { useShareContext } from "../context/ShareContext";
 import { useI18n } from "../context/I18nContext";
 import { useSavedCards, SavedCard } from "../context/SavedCardsContext";
 import { useCardSwipe } from "../hooks/useCardSwipe";
-import { Container, Header, SectionLabel, HeaderActions, IconButton } from "../styles/index.styles";
+import {
+  Container,
+  Header,
+  SectionLabel,
+  HeaderActions,
+  IconButton,
+} from "../styles/index.styles";
 import { GreetingCard } from "../components/GreetingCard";
 import { ActionButtons } from "../components/ActionButtons";
 import { MoodPicker } from "../components/MoodPicker";
@@ -22,8 +28,12 @@ export default function Index() {
     setFocusedBlockId,
     textBlocks,
     imageUrl,
+    mood,
+    holiday,
+    isSaved,
+    markAsSaved,
   } = useGreetingContext();
-  const { share, sharing } = useShareContext();
+  const { share, sharing, captureCard } = useShareContext();
   const { saveCard } = useSavedCards();
   const { cardStyle, swipe: swipeCard } = useCardSwipe(refreshGreeting);
   const { t } = useI18n();
@@ -43,11 +53,15 @@ export default function Index() {
   );
 
   const handleSave = useCallback(async () => {
-    if (!imageUrl) return;
+    if (!imageUrl || isSaved) return;
+    const preview = await captureCard();
     const card: SavedCard = {
       id: Date.now().toString(),
       savedAt: Date.now(),
       imageUrl,
+      preview,
+      mood,
+      holiday,
       blocks: textBlocks.map((block) => ({
         id: block.id,
         text: block.text,
@@ -60,7 +74,8 @@ export default function Index() {
       })),
     };
     await saveCard(card);
-  }, [imageUrl, textBlocks, saveCard]);
+    markAsSaved();
+  }, [imageUrl, isSaved, textBlocks, saveCard, mood, holiday, markAsSaved, captureCard]);
 
   return (
     <Container>
@@ -75,15 +90,16 @@ export default function Index() {
           </IconButton>
         </HeaderActions>
       </Header>
-      <MoodPicker onSelect={handleMoodSelect} />
+      <MoodPicker
+        onSelect={handleMoodSelect}
+        value={{ mood, holidayMood: holiday }}
+      />
       <GreetingCard cardStyle={cardStyle} onSave={handleSave} />
       <ActionButtons
         swipe={swipe}
         loading={loading}
         share={share}
         sharing={sharing}
-        t={t}
-        paddingBottom={insets.bottom + 16}
       />
     </Container>
   );

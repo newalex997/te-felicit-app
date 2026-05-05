@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { styled } from "styled-components/native";
@@ -10,6 +10,7 @@ export type MoodSelection = { mood?: string; holidayMood?: string };
 
 type Props = {
   onSelect?: (selection: MoodSelection) => void;
+  value?: MoodSelection;
 };
 
 const Row = styled(ScrollView).attrs({
@@ -50,11 +51,11 @@ const ClearButton = styled.Pressable`
   justify-content: center;
 `;
 
-export function MoodPicker({ onSelect }: Props) {
+export function MoodPicker({ onSelect, value }: Props) {
   const scrollRef = useRef<ScrollView>(null);
   const { locale } = useI18n();
-  const [selectedMood, setSelectedMood] = useState<string | null>(null);
-  const [selectedHolidayMood, setSelectedHolidayMood] = useState<string | null>(null);
+  const [selectedMood, setSelectedMood] = useState<string | null>(value?.mood ?? null);
+  const [selectedHolidayMood, setSelectedHolidayMood] = useState<string | null>(value?.holidayMood ?? null);
   const [moods, setMoods] = useState<MoodOptionDto[]>([]);
   const [holidayMoods, setHolidayMoods] = useState<MoodOptionDto[]>([]);
 
@@ -65,28 +66,33 @@ export function MoodPicker({ onSelect }: Props) {
     });
   }, [locale]);
 
-  function notify(mood: string | null, holidayMood: string | null) {
-    onSelect?.({ mood: mood ?? undefined, holidayMood: holidayMood ?? undefined });
-  }
+  useEffect(() => {
+    setSelectedMood(value?.mood ?? null);
+    setSelectedHolidayMood(value?.holidayMood ?? null);
+  }, [value?.mood, value?.holidayMood]);
 
-  function handlePressHoliday(id: string) {
+  const notify = useCallback((mood: string | null, holidayMood: string | null) => {
+    onSelect?.({ mood: mood ?? undefined, holidayMood: holidayMood ?? undefined });
+  }, [onSelect]);
+
+  const handlePressHoliday = useCallback((id: string) => {
     setSelectedMood(null);
     setSelectedHolidayMood(id);
     notify(null, id);
     scrollRef.current?.scrollTo({ x: 0, animated: true });
-  }
+  }, [notify]);
 
-  function handlePressMood(id: string) {
+  const handlePressMood = useCallback((id: string) => {
     const next = selectedMood === id ? null : id;
     setSelectedMood(next);
     notify(next, selectedHolidayMood);
-  }
+  }, [selectedMood, selectedHolidayMood, notify]);
 
-  function handleClear() {
+  const handleClear = useCallback(() => {
     setSelectedMood(null);
     setSelectedHolidayMood(null);
     notify(null, null);
-  }
+  }, [notify]);
 
   const activeHoliday = holidayMoods.find((m) => m.id === selectedHolidayMood) ?? null;
 

@@ -11,6 +11,8 @@ import { ShareProvider } from "../context/ShareContext";
 import { SavedCardsProvider } from "../context/SavedCardsContext";
 import { OfflineScreen } from "../components/OfflineScreen";
 
+const rootStyle = { flex: 1 } as const;
+
 function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <SavedCardsProvider>
@@ -40,7 +42,7 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={rootStyle}>
       <ThemeProvider theme={theme}>
         <I18nProvider>
           <AppProviders>

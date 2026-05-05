@@ -1,4 +1,4 @@
-import React from "react";
+import { Fragment } from "react";
 import { Feather } from "@expo/vector-icons";
 import { useI18n } from "../context/I18nContext";
 import { SUPPORTED_LOCALES, type SupportedLocale } from "../i18n";
@@ -26,7 +26,7 @@ export function LanguageChooser() {
       {SUPPORTED_LOCALES.map((lang, index) => {
         const isLast = index === SUPPORTED_LOCALES.length - 1;
         return (
-          <React.Fragment key={lang}>
+          <Fragment key={lang}>
             <Row onPress={() => setLocale(lang)}>
               <RowLeft>
                 <Flag>{LANGUAGE_FLAGS[lang]}</Flag>
@@ -35,7 +35,7 @@ export function LanguageChooser() {
               {locale === lang && <Feather name="check" size={18} color="#fff" />}
             </Row>
             {!isLast && <Divider />}
-          </React.Fragment>
+          </Fragment>
         );
       })}
     </Card>

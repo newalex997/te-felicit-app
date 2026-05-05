@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { AntDesign, Feather } from "@expo/vector-icons";
 import { Pressable } from "react-native";
 import { styled } from "styled-components/native";
 import { useGreetingContext } from "../context/GreetingContext";
@@ -21,14 +21,18 @@ const Button = styled(Pressable)`
 `;
 
 export function CardImageButtons({ onSave }: Props) {
-  const { refreshImage, imageLoading, loading } = useGreetingContext();
+  const { refreshImage, imageLoading, loading, isSaved } = useGreetingContext();
 
   if (imageLoading || loading) return null;
 
   return (
     <Group>
-      <Button onPress={onSave}>
-        <Feather name="heart" size={18} color="#1a1a2e" />
+      <Button onPress={isSaved ? undefined : onSave}>
+        {isSaved ? (
+          <AntDesign name="heart" size={18} color="#e05c6a" />
+        ) : (
+          <Feather name="heart" size={18} color="#1a1a2e" />
+        )}
       </Button>
       <Button onPress={refreshImage}>
         <Feather name="refresh-cw" size={18} color="#1a1a2e" />

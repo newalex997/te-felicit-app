@@ -1,3 +1,5 @@
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useI18n } from "../context/I18nContext";
 import {
   Buttons,
   ShareButton,
@@ -11,20 +13,14 @@ type ActionButtonsProps = {
   loading: boolean;
   share: () => void;
   sharing: boolean;
-  t: (key: string) => string;
-  paddingBottom: number;
 };
 
-export function ActionButtons({
-  swipe,
-  loading,
-  share,
-  sharing,
-  t,
-  paddingBottom,
-}: ActionButtonsProps) {
+export function ActionButtons({ swipe, loading, share, sharing }: ActionButtonsProps) {
+  const { t } = useI18n();
+  const insets = useSafeAreaInsets();
+
   return (
-    <Buttons style={{ paddingBottom }}>
+    <Buttons style={{ paddingBottom: insets.bottom + 16 }}>
       <TryAnotherButton onPress={swipe} disabled={loading}>
         <TryAnotherText>
           {loading ? t("loading") : t("tryAnother")}

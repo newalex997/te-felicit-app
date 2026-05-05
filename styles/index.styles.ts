@@ -82,9 +82,9 @@ export const Header = styled.View<{ paddingTop: number }>`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-bottom: 10px;
+  padding-left: ${({ theme }) => theme.space.lg}px;
+  padding-right: ${({ theme }) => theme.space.lg}px;
+  padding-bottom: ${({ theme }) => theme.space.sm}px;
   padding-top: ${({ paddingTop }) => paddingTop}px;
 `;
 
@@ -97,7 +97,7 @@ export const SectionLabel = styled.Text`
 
 export const HeaderActions = styled.View`
   flex-direction: row;
-  gap: 8px;
+  gap: ${({ theme }) => theme.space.sm}px;
 `;
 
 export const IconButton = styled.Pressable`

@@ -24,6 +24,9 @@ export type SavedCard = {
   id: string;
   savedAt: number;
   imageUrl: string;
+  preview?: string;
+  mood?: string;
+  holiday?: string;
   blocks: SavedCardBlock[];
 };
 
@@ -46,23 +49,21 @@ export function SavedCardsProvider({ children }: { children: React.ReactNode }) 
     });
   }, []);
 
-  const saveCard = useCallback(
-    async (card: SavedCard) => {
-      const updated = [card, ...savedCards];
-      setSavedCards(updated);
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    },
-    [savedCards],
-  );
+  const saveCard = useCallback(async (card: SavedCard) => {
+    setSavedCards((prev) => {
+      const updated = [card, ...prev];
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
-  const removeCard = useCallback(
-    async (id: string) => {
-      const updated = savedCards.filter((c) => c.id !== id);
-      setSavedCards(updated);
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    },
-    [savedCards],
-  );
+  const removeCard = useCallback(async (id: string) => {
+    setSavedCards((prev) => {
+      const updated = prev.filter((c) => c.id !== id);
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   return (
     <SavedCardsContext.Provider value={{ savedCards, saveCard, removeCard }}>

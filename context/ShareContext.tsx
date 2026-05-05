@@ -12,6 +12,7 @@ interface ShareContextValue {
   cardRef: React.RefObject<null>;
   sharing: boolean;
   share: () => Promise<void>;
+  captureCard: () => Promise<string>;
 }
 
 const ShareContext = createContext<ShareContextValue | null>(null);
@@ -19,6 +20,11 @@ const ShareContext = createContext<ShareContextValue | null>(null);
 export function ShareProvider({ children }: { children: React.ReactNode }) {
   const cardRef = useRef(null);
   const [sharing, setSharing] = useState(false);
+
+  const captureCard = useCallback(async (): Promise<string> => {
+    if (!cardRef.current) return "";
+    return captureRef(cardRef, { format: "jpg", quality: 0.7, result: "base64" });
+  }, []);
 
   const share = useCallback(async () => {
     if (!cardRef.current || sharing) return;
@@ -41,7 +47,7 @@ export function ShareProvider({ children }: { children: React.ReactNode }) {
   }, [sharing]);
 
   return (
-    <ShareContext.Provider value={{ cardRef, sharing, share }}>
+    <ShareContext.Provider value={{ cardRef, sharing, share, captureCard }}>
       {children}
     </ShareContext.Provider>
   );

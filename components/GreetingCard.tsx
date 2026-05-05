@@ -50,7 +50,11 @@ export function GreetingCard({ cardStyle, onSave }: Props) {
       <CardFrame>
         <View ref={cardRef} collapsable={false} style={cardViewStyle}>
           <Animated.View style={[{ flex: 1 }, imageStyle]}>
-            <Card source={imageUrl ? { uri: imageUrl } : undefined} resizeMode="cover" onLoadEnd={handleImageLoad}>
+            <Card
+              source={imageUrl ? { uri: imageUrl } : undefined}
+              resizeMode="cover"
+              onLoadEnd={handleImageLoad}
+            >
               <CardOverlay
                 colors={OVERLAY_COLORS}
                 start={OVERLAY_START}

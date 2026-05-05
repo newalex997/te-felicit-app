@@ -1,4 +1,4 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useCallback } from "react";
 import { styled } from "styled-components/native";
 import { TextBlockId, useGreetingContext } from "../../context/GreetingContext";
 import { TextBlockConfigDto } from "../../api/Api";
@@ -70,15 +70,15 @@ function CardFontInner() {
     [editingBlockId, visibleBlocks],
   );
 
-  function openEditing(blockId: TextBlockId) {
+  const openEditing = useCallback((blockId: TextBlockId) => {
     setFocusedBlockId(blockId);
     setEditingBlockId(blockId);
-  }
+  }, [setFocusedBlockId, setEditingBlockId]);
 
-  function closeEditing() {
+  const closeEditing = useCallback(() => {
     setFocusedBlockId(null);
     setEditingBlockId(null);
-  }
+  }, [setFocusedBlockId, setEditingBlockId]);
 
   return (
     <Container>

@@ -1,4 +1,4 @@
-import styled from "styled-components/native";
+import { styled } from "styled-components/native";
 
 export { Container, Header, BackButton, Title } from "./screen.styles";
 
@@ -6,12 +6,14 @@ export const EmptyText = styled.Text`
   color: rgba(255, 255, 255, 0.4);
   text-align: center;
   margin-top: 120px;
-  font-size: 16px;
+  font-size: ${({ theme }) => theme.fontSizes.md}px;
 `;
 
+export const ColumnWrapper = { gap: 10 } as const;
+
 export const Card = styled.Pressable`
-  height: 180px;
-  border-radius: 14px;
+  height: 200px;
+  border-radius: ${({ theme }) => theme.radii.md}px;
   overflow: hidden;
   background-color: #333;
 `;
@@ -23,7 +25,7 @@ export const CardOverlay = styled.View`
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.35);
-  padding: 12px;
+  padding: ${({ theme }) => theme.space.md}px;
   flex-direction: row;
   align-items: flex-end;
   justify-content: space-between;
@@ -35,20 +37,15 @@ export const CardContent = styled.View`
 `;
 
 export const SloganText = styled.Text`
-  color: #fff;
+  color: ${({ theme }) => theme.colors.text};
   font-size: 15px;
   font-weight: 600;
-`;
-
-export const MessageText = styled.Text`
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 13px;
 `;
 
 export const DateText = styled.Text`
   color: rgba(255, 255, 255, 0.5);
   font-size: 11px;
-  margin-top: 4px;
+  margin-top: ${({ theme }) => theme.space.xs}px;
 `;
 
 export const DeleteButton = styled.Pressable`
@@ -57,12 +54,12 @@ export const DeleteButton = styled.Pressable`
   padding-top: 6px;
   padding-bottom: 6px;
   background-color: rgba(220, 50, 50, 0.75);
-  border-radius: 8px;
-  margin-left: 8px;
+  border-radius: ${({ theme }) => theme.space.sm}px;
+  margin-left: ${({ theme }) => theme.space.sm}px;
 `;
 
 export const DeleteText = styled.Text`
-  color: #fff;
+  color: ${({ theme }) => theme.colors.text};
   font-size: 12px;
   font-weight: 600;
 `;

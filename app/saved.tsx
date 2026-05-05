@@ -1,4 +1,5 @@
-import { FlatList } from "react-native";
+import { useCallback } from "react";
+import { FlatList, useWindowDimensions } from "react-native";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -15,25 +16,51 @@ import {
   CardOverlay,
   CardContent,
   SloganText,
-  MessageText,
   DateText,
   DeleteButton,
   DeleteText,
   CoverImage,
+  ColumnWrapper,
 } from "../styles/saved.styles";
 
-const ListContent = { padding: 16, gap: 12 } as const;
+const ListContent = { padding: 12, gap: 12 } as const;
 
 export default function SavedScreen() {
   const insets = useSafeAreaInsets();
   const { savedCards, removeCard } = useSavedCards();
   const { restoreCard } = useGreetingContext();
   const { t } = useI18n();
+  const { width } = useWindowDimensions();
+  const cardWidth = (width - 24 - 10) / 2;
 
-  function handleLoad(card: SavedCard) {
+  const handleLoad = useCallback((card: SavedCard) => {
     restoreCard(card);
     router.back();
-  }
+  }, [restoreCard]);
+
+  const renderItem = useCallback(({ item }: { item: SavedCard }) => {
+    const slogan = item.blocks.find((b) => b.id === "slogan");
+    const savedDate = new Date(item.savedAt).toLocaleDateString();
+    const imageSource = item.preview
+      ? { uri: `data:image/jpeg;base64,${item.preview}` }
+      : { uri: item.imageUrl };
+    return (
+      <Card onPress={() => handleLoad(item)} style={{ width: cardWidth }}>
+        <CoverImage source={imageSource} resizeMode="cover" />
+        <CardOverlay>
+          <CardContent>
+            {slogan?.text ? (
+              <SloganText numberOfLines={2}>{slogan.text}</SloganText>
+            ) : null}
+            <DateText>{savedDate}</DateText>
+          </CardContent>
+          <DeleteButton onPress={() => removeCard(item.id)} hitSlop={8}>
+            <DeleteText>{t("delete")}</DeleteText>
+          </DeleteButton>
+        </CardOverlay>
+      </Card>
+    );
+  }, [handleLoad, removeCard, t, cardWidth]);
 
   return (
     <Container paddingTop={insets.top + 8}>
@@ -50,31 +77,10 @@ export default function SavedScreen() {
         <FlatList
           data={savedCards}
           keyExtractor={(item) => item.id}
+          numColumns={2}
+          columnWrapperStyle={ColumnWrapper}
           contentContainerStyle={ListContent}
-          renderItem={({ item }) => {
-            const slogan = item.blocks.find((b) => b.id === "slogan");
-            const message = item.blocks.find((b) => b.id === "message");
-            const savedDate = new Date(item.savedAt).toLocaleDateString();
-            return (
-              <Card onPress={() => handleLoad(item)}>
-                <CoverImage source={{ uri: item.imageUrl }} resizeMode="cover" />
-                <CardOverlay>
-                  <CardContent>
-                    {slogan?.text ? (
-                      <SloganText numberOfLines={1}>{slogan.text}</SloganText>
-                    ) : null}
-                    {message?.text ? (
-                      <MessageText numberOfLines={2}>{message.text}</MessageText>
-                    ) : null}
-                    <DateText>{savedDate}</DateText>
-                  </CardContent>
-                  <DeleteButton onPress={() => removeCard(item.id)} hitSlop={8}>
-                    <DeleteText>{t("delete")}</DeleteText>
-                  </DeleteButton>
-                </CardOverlay>
-              </Card>
-            );
-          }}
+          renderItem={renderItem}
         />
       )}
     </Container>
