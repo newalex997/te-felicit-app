@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { greetingApi } from "../api/greeting";
 import { TextBlockConfigDto } from "../api/Api";
 import { useI18n } from "./I18nContext";
@@ -9,7 +17,7 @@ import {
   TextEffect,
   useTextBlockState,
 } from "./useTextBlockState";
-import { SavedCard } from "./SavedCardsContext";
+import { SavedCard, useSavedCards } from "./SavedCardsContext";
 
 export type TextBlockId = "slogan" | "message";
 
@@ -33,8 +41,6 @@ interface GreetingContextValue {
   textBlocks: TextBlock[];
   imageUrl: string;
   loading: boolean;
-  imageLoading: boolean;
-  setImageLoaded: () => void;
   focusedBlockId: TextBlockId | null;
   setFocusedBlockId: (id: TextBlockId | null) => void;
   setBlockText: (id: TextBlockId, text: string) => void;
@@ -52,7 +58,8 @@ interface GreetingContextValue {
   setHoliday: (holiday: string | undefined) => void;
   restoreCard: (card: SavedCard) => void;
   isSaved: boolean;
-  markAsSaved: () => void;
+  markAsSaved: (id: string) => void;
+  unsaveCard: () => void;
 }
 
 const GreetingContext = createContext<GreetingContextValue | null>(null);
@@ -92,70 +99,93 @@ function buildBlock(
 }
 
 export function GreetingProvider({ children }: { children: React.ReactNode }) {
-  const [texts, setTexts] = useState<Record<TextBlockId, string>>({ slogan: "", message: "" });
+  const [texts, setTexts] = useState<Record<TextBlockId, string>>({
+    slogan: "",
+    message: "",
+  });
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [isSaved, setIsSaved] = useState(false);
-  const [focusedBlockId, setFocusedBlockId] = useState<TextBlockId | null>(null);
-
-  const { locale } = useI18n();
+  const [savedCardId, setSavedCardId] = useState<string | null>(null);
+  const [focusedBlockId, setFocusedBlockId] = useState<TextBlockId | null>(
+    null,
+  );
   const [mood, setMood] = useState<string | undefined>(undefined);
   const [holiday, setHoliday] = useState<string | undefined>(undefined);
-  const [sloganConfig, setSloganConfig] = useState<BlockConfig | null>(null);
-  const [messageConfig, setMessageConfig] = useState<BlockConfig | null>(null);
+  const [configs, setConfigs] = useState<
+    Record<TextBlockId, BlockConfig | null>
+  >({ slogan: null, message: null });
 
-  const moodRef = useRef(mood);
-  const holidayRef = useRef(holiday);
-  moodRef.current = mood;
-  holidayRef.current = holiday;
+  const { locale } = useI18n();
+  const filtersRef = useRef({ mood, holiday });
+  filtersRef.current = { mood, holiday };
   const isRestoringRef = useRef(false);
+
+  const { removeCard, savedCards } = useSavedCards();
+
+  const isSaved = useMemo(
+    () => savedCardId !== null && savedCards.some((c) => c.id === savedCardId),
+    [savedCards, savedCardId],
+  );
 
   function updateImageUrl(url: string) {
     setImageUrl(url);
-    setImageLoading(true);
-    setIsSaved(false);
+    setSavedCardId(null);
   }
 
-  const setImageLoaded = useCallback(() => setImageLoading(false), []);
-  const markAsSaved = useCallback(() => setIsSaved(true), []);
+  const markAsSaved = useCallback((id: string) => setSavedCardId(id), []);
+  const unsaveCard = useCallback(() => {
+    if (savedCardId) removeCard(savedCardId);
+  }, [savedCardId, removeCard]);
 
-  const sloganState = useTextBlockState(sloganConfig);
-  const messageState = useTextBlockState(messageConfig);
-  const focusedState =
-    focusedBlockId === "slogan"
-      ? sloganState
-      : focusedBlockId === "message"
-        ? messageState
-        : null;
+  const sloganState = useTextBlockState(configs.slogan);
+  const messageState = useTextBlockState(configs.message);
+  const blockStates = { slogan: sloganState, message: messageState };
+  const focusedState = focusedBlockId ? blockStates[focusedBlockId] : null;
 
   const refreshGreeting = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await greetingApi.getGreeting(moodRef.current, holidayRef.current);
+      const { mood, holiday } = filtersRef.current;
+      const data = await greetingApi.getGreeting(mood, holiday);
       setTexts({ slogan: data.slogan, message: data.message });
       updateImageUrl(data.imageUrl);
-      setSloganConfig(data.textConfig.slogan);
-      setMessageConfig(data.textConfig.message);
+      setConfigs({
+        slogan: data.textConfig.slogan,
+        message: data.textConfig.message,
+      });
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (isRestoringRef.current) {
       isRestoringRef.current = false;
       return;
     }
     refreshGreeting();
-  }, [mood, holiday, locale]);
+  }, [mood, holiday, locale, refreshGreeting]);
 
-  const cycleBlockFont = useCallback(() => focusedState?.cycleFont(), [focusedState]);
-  const cycleBlockColor = useCallback(() => focusedState?.cycleColor(), [focusedState]);
-  const cycleBlockTextEffect = useCallback(() => focusedState?.cycleTextEffect(), [focusedState]);
-  const cycleBlockTextAlign = useCallback(() => focusedState?.cycleTextAlign(), [focusedState]);
-  const setBlockFontSize = useCallback((size: number) => focusedState?.setFontSize(size), [focusedState]);
+  const cycleBlockFont = useCallback(
+    () => focusedState?.cycleFont(),
+    [focusedState],
+  );
+  const cycleBlockColor = useCallback(
+    () => focusedState?.cycleColor(),
+    [focusedState],
+  );
+  const cycleBlockTextEffect = useCallback(
+    () => focusedState?.cycleTextEffect(),
+    [focusedState],
+  );
+  const cycleBlockTextAlign = useCallback(
+    () => focusedState?.cycleTextAlign(),
+    [focusedState],
+  );
+  const setBlockFontSize = useCallback(
+    (size: number) => focusedState?.setFontSize(size),
+    [focusedState],
+  );
 
   const setBlockText = useCallback((id: TextBlockId, text: string) => {
     setTexts((prev) => ({ ...prev, [id]: text }));
@@ -169,12 +199,14 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
   }, [focusedBlockId]);
 
   const refreshImage = useCallback(async () => {
-    const data = await greetingApi.getImage(moodRef.current, holidayRef.current);
+    const { mood, holiday } = filtersRef.current;
+    const data = await greetingApi.getImage(mood, holiday);
     updateImageUrl(data.imageUrl);
   }, []);
 
   const restoreCard = useCallback((card: SavedCard) => {
-    if (card.mood !== moodRef.current || card.holiday !== holidayRef.current) {
+    const { mood: currentMood, holiday: currentHoliday } = filtersRef.current;
+    if (card.mood !== currentMood || card.holiday !== currentHoliday) {
       isRestoringRef.current = true;
     }
     setMood(card.mood);
@@ -183,17 +215,19 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
     const slogan = card.blocks.find((b) => b.id === "slogan");
     const message = card.blocks.find((b) => b.id === "message");
     setTexts({ slogan: slogan?.text ?? "", message: message?.text ?? "" });
-    if (slogan) setSloganConfig(blockToConfig(slogan));
-    if (message) setMessageConfig(blockToConfig(message));
-    setIsSaved(true);
+    setConfigs({
+      slogan: slogan ? blockToConfig(slogan) : null,
+      message: message ? blockToConfig(message) : null,
+    });
+    setSavedCardId(card.id);
   }, []);
 
   const textBlocks = useMemo(
     () => [
-      buildBlock("slogan", texts, sloganState, sloganConfig),
-      buildBlock("message", texts, messageState, messageConfig),
+      buildBlock("slogan", texts, sloganState, configs.slogan),
+      buildBlock("message", texts, messageState, configs.message),
     ],
-    [texts, sloganState, messageState, sloganConfig, messageConfig],
+    [texts, sloganState, messageState, configs],
   );
 
   return (
@@ -202,8 +236,6 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         textBlocks,
         imageUrl,
         loading,
-        imageLoading,
-        setImageLoaded,
         focusedBlockId,
         setFocusedBlockId,
         setBlockText,
@@ -222,6 +254,7 @@ export function GreetingProvider({ children }: { children: React.ReactNode }) {
         restoreCard,
         isSaved,
         markAsSaved,
+        unsaveCard,
       }}
     >
       {children}

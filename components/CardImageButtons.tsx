@@ -2,10 +2,8 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 import { Pressable } from "react-native";
 import { styled } from "styled-components/native";
 import { useGreetingContext } from "../context/GreetingContext";
-
-type Props = {
-  onSave: () => void;
-};
+import { useSavedCards } from "../context/SavedCardsContext";
+import { useShareContext } from "../context/ShareContext";
 
 const Group = styled.View`
   gap: 8px;
@@ -20,14 +18,48 @@ const Button = styled(Pressable)`
   justify-content: center;
 `;
 
-export function CardImageButtons({ onSave }: Props) {
-  const { refreshImage, imageLoading, loading, isSaved } = useGreetingContext();
+export function CardImageButtons() {
+  const {
+    refreshImage,
+    isSaved,
+    unsaveCard,
+    imageUrl,
+    textBlocks,
+    mood,
+    holiday,
+    markAsSaved,
+  } = useGreetingContext();
+  const { saveCard } = useSavedCards();
+  const { captureCard } = useShareContext();
 
-  if (imageLoading || loading) return null;
+  const handleSave = async () => {
+    if (!imageUrl) return;
+
+    if (isSaved) {
+      unsaveCard();
+      return;
+    }
+
+    const preview = await captureCard();
+
+    const card = {
+      id: Date.now().toString(),
+      savedAt: Date.now(),
+      imageUrl,
+      preview,
+      mood,
+      holiday,
+      blocks: textBlocks,
+    };
+
+    await saveCard(card);
+
+    markAsSaved(card.id);
+  };
 
   return (
     <Group>
-      <Button onPress={isSaved ? undefined : onSave}>
+      <Button onPress={handleSave}>
         {isSaved ? (
           <AntDesign name="heart" size={18} color="#e05c6a" />
         ) : (

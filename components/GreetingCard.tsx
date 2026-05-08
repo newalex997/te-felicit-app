@@ -8,12 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useGreetingContext } from "../context/GreetingContext";
 import { useShareContext } from "../context/ShareContext";
-import {
-  Card,
-  CardButtonsContainer,
-  CardFrame,
-  CardOverlay,
-} from "../styles/index.styles";
+import { Card, CardFrame, CardOverlay } from "../styles/index.styles";
 import { CardImageButtons } from "./CardImageButtons";
 import { CardFont } from "./CardFont";
 import { Watermark } from "./Watermark";
@@ -23,14 +18,19 @@ const OVERLAY_COLORS = ["rgba(0,0,0,0.15)", "rgba(0,0,0,0.55)"] as const;
 const OVERLAY_START = { x: 0, y: 0 };
 const OVERLAY_END = { x: 0, y: 1 };
 const cardViewStyle = { flex: 1, backgroundColor: "black" } as const;
+const buttonsWrapperStyle = {
+  position: "absolute" as const,
+  top: 28,
+  right: 28,
+  zIndex: 10,
+};
 
 type Props = {
   cardStyle: AnimatedStyle<ViewStyle>;
-  onSave: () => void;
 };
 
-export function GreetingCard({ cardStyle, onSave }: Props) {
-  const { imageUrl, setImageLoaded } = useGreetingContext();
+export function GreetingCard({ cardStyle }: Props) {
+  const { imageUrl } = useGreetingContext();
   const { cardRef } = useShareContext();
   const opacity = useSharedValue(0);
 
@@ -39,7 +39,6 @@ export function GreetingCard({ cardStyle, onSave }: Props) {
   }, [imageUrl]);
 
   function handleImageLoad() {
-    setImageLoaded();
     opacity.value = withTiming(1, { duration: CARD_FADE_DURATION });
   }
 
@@ -68,9 +67,9 @@ export function GreetingCard({ cardStyle, onSave }: Props) {
         </View>
       </CardFrame>
 
-      <CardButtonsContainer>
-        <CardImageButtons onSave={onSave} />
-      </CardButtonsContainer>
+      <Animated.View style={[buttonsWrapperStyle, imageStyle]}>
+        <CardImageButtons />
+      </Animated.View>
     </Animated.View>
   );
 }

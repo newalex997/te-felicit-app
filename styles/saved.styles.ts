@@ -24,7 +24,7 @@ export const CardOverlay = styled.View`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.35);
+  background-color: rgba(0, 0, 0, 0.1);
   padding: ${({ theme }) => theme.space.md}px;
   flex-direction: row;
   align-items: flex-end;
@@ -48,20 +48,16 @@ export const DateText = styled.Text`
   margin-top: ${({ theme }) => theme.space.xs}px;
 `;
 
-export const DeleteButton = styled.Pressable`
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 6px;
-  padding-bottom: 6px;
-  background-color: rgba(220, 50, 50, 0.75);
-  border-radius: ${({ theme }) => theme.space.sm}px;
-  margin-left: ${({ theme }) => theme.space.sm}px;
-`;
-
-export const DeleteText = styled.Text`
-  color: ${({ theme }) => theme.colors.text};
-  font-size: 12px;
-  font-weight: 600;
+export const DeleteIconButton = styled.Pressable`
+  position: absolute;
+  top: ${({ theme }) => theme.space.sm}px;
+  right: ${({ theme }) => theme.space.sm}px;
+  width: 26px;
+  height: 26px;
+  border-radius: 13px;
+  background-color: rgba(255, 255, 255, 0.9);
+  align-items: center;
+  justify-content: center;
 `;
 
 export const CoverImage = styled.Image`

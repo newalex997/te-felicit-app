@@ -12,18 +12,19 @@ import {
   RowValue,
 } from "../styles/settings.styles";
 
-const PRIVACY_POLICY_URL = "https://mesajedinsuflet.app/en/privacy-policy";
-const TERMS_URL = "https://mesajedinsuflet.app/en/terms-and-conditions";
-const CONTACT_US_URL = "https://mesajedinsuflet.app/en/contact-us";
+const BASE_URL = "https://mesajedinsuflet.app";
 
 export function AppInfoSection() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const privacyPolicyUrl = `${BASE_URL}/${locale}/privacy-policy`;
+  const termsUrl = `${BASE_URL}/${locale}/terms-and-conditions`;
+  const contactUsUrl = `${BASE_URL}/${locale}/contact-us`;
 
   return (
     <>
       <SectionLabel marginTop={28}>{t("appInfo").toUpperCase()}</SectionLabel>
       <Card>
-        <RowPressable onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+        <RowPressable onPress={() => Linking.openURL(privacyPolicyUrl)}>
           <RowLabel>{t("privacyPolicy")}</RowLabel>
           <Feather
             name="external-link"
@@ -32,7 +33,7 @@ export function AppInfoSection() {
           />
         </RowPressable>
         <RowDivider />
-        <RowPressable onPress={() => Linking.openURL(TERMS_URL)}>
+        <RowPressable onPress={() => Linking.openURL(termsUrl)}>
           <RowLabel>{t("termsAndConditions")}</RowLabel>
           <Feather
             name="external-link"
@@ -41,7 +42,7 @@ export function AppInfoSection() {
           />
         </RowPressable>
         <RowDivider />
-        <RowPressable onPress={() => Linking.openURL(CONTACT_US_URL)}>
+        <RowPressable onPress={() => Linking.openURL(contactUsUrl)}>
           <RowLabel>{t("contactUs")}</RowLabel>
           <Feather
             name="external-link"

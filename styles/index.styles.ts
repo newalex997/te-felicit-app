@@ -25,14 +25,6 @@ export const CardOverlay = styled(LinearGradient)`
   padding: ${({ theme }) => theme.space.xxl}px;
 `;
 
-export const CardButtonsContainer = styled.View`
-  position: absolute;
-  top: ${({ theme }) => theme.space.lg + theme.space.md}px;
-  right: ${({ theme }) => theme.space.lg + theme.space.md}px;
-  gap: ${({ theme }) => theme.space.sm}px;
-  z-index: 10;
-`;
-
 
 export const CardIconButton = styled.Pressable`
   width: 36px;

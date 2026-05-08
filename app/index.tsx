@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGreetingContext } from "../context/GreetingContext";
 import { useShareContext } from "../context/ShareContext";
 import { useI18n } from "../context/I18nContext";
-import { useSavedCards, SavedCard } from "../context/SavedCardsContext";
 import { useCardSwipe } from "../hooks/useCardSwipe";
 import {
   Container,
@@ -26,15 +25,10 @@ export default function Index() {
     setMood,
     setHoliday,
     setFocusedBlockId,
-    textBlocks,
-    imageUrl,
     mood,
     holiday,
-    isSaved,
-    markAsSaved,
   } = useGreetingContext();
-  const { share, sharing, captureCard } = useShareContext();
-  const { saveCard } = useSavedCards();
+  const { share, sharing } = useShareContext();
   const { cardStyle, swipe: swipeCard } = useCardSwipe(refreshGreeting);
   const { t } = useI18n();
 
@@ -51,31 +45,6 @@ export default function Index() {
     },
     [setMood, setHoliday, setFocusedBlockId],
   );
-
-  const handleSave = useCallback(async () => {
-    if (!imageUrl || isSaved) return;
-    const preview = await captureCard();
-    const card: SavedCard = {
-      id: Date.now().toString(),
-      savedAt: Date.now(),
-      imageUrl,
-      preview,
-      mood,
-      holiday,
-      blocks: textBlocks.map((block) => ({
-        id: block.id,
-        text: block.text,
-        fontFamily: block.fontFamily,
-        fontSize: block.fontSize,
-        color: block.color,
-        textEffect: block.textEffect,
-        textAlign: block.textAlign,
-        position: block.position,
-      })),
-    };
-    await saveCard(card);
-    markAsSaved();
-  }, [imageUrl, isSaved, textBlocks, saveCard, mood, holiday, markAsSaved, captureCard]);
 
   return (
     <Container>
@@ -94,7 +63,7 @@ export default function Index() {
         onSelect={handleMoodSelect}
         value={{ mood, holidayMood: holiday }}
       />
-      <GreetingCard cardStyle={cardStyle} onSave={handleSave} />
+      <GreetingCard cardStyle={cardStyle} />
       <ActionButtons
         swipe={swipe}
         loading={loading}

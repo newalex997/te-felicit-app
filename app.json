@@ -18,6 +18,7 @@
       }
     },
     "android": {
+      "versionCode": 105,
       "package": "com.pipedigital.mesajedinsuflet",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -41,8 +42,20 @@
           }
         }
       ],
-      "expo-localization",
-      "expo-web-browser"
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,
