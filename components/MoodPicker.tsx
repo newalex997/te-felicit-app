@@ -4,14 +4,8 @@ import { Feather } from "@expo/vector-icons";
 import { styled } from "styled-components/native";
 import { greetingApi } from "../api/greeting";
 import { MoodOptionDto } from "../api/Api";
+import { useGreetingContext } from "../context/GreetingContext";
 import { useI18n } from "../context/I18nContext";
-
-export type MoodSelection = { mood?: string; holidayMood?: string };
-
-type Props = {
-  onSelect?: (selection: MoodSelection) => void;
-  value?: MoodSelection;
-};
 
 const Row = styled(ScrollView).attrs({
   horizontal: true,
@@ -51,11 +45,12 @@ const ClearButton = styled.Pressable`
   justify-content: center;
 `;
 
-export function MoodPicker({ onSelect, value }: Props) {
+export function MoodPicker() {
   const scrollRef = useRef<ScrollView>(null);
   const { locale } = useI18n();
-  const [selectedMood, setSelectedMood] = useState<string | null>(value?.mood ?? null);
-  const [selectedHolidayMood, setSelectedHolidayMood] = useState<string | null>(value?.holidayMood ?? null);
+  const { mood, holiday, setMood, setHoliday, setFocusedBlockId } = useGreetingContext();
+  const [selectedMood, setSelectedMood] = useState<string | null>(mood ?? null);
+  const [selectedHolidayMood, setSelectedHolidayMood] = useState<string | null>(holiday ?? null);
   const [moods, setMoods] = useState<MoodOptionDto[]>([]);
   const [holidayMoods, setHolidayMoods] = useState<MoodOptionDto[]>([]);
 
@@ -67,13 +62,15 @@ export function MoodPicker({ onSelect, value }: Props) {
   }, [locale]);
 
   useEffect(() => {
-    setSelectedMood(value?.mood ?? null);
-    setSelectedHolidayMood(value?.holidayMood ?? null);
-  }, [value?.mood, value?.holidayMood]);
+    setSelectedMood(mood ?? null);
+    setSelectedHolidayMood(holiday ?? null);
+  }, [mood, holiday]);
 
-  const notify = useCallback((mood: string | null, holidayMood: string | null) => {
-    onSelect?.({ mood: mood ?? undefined, holidayMood: holidayMood ?? undefined });
-  }, [onSelect]);
+  const notify = useCallback((nextMood: string | null, nextHoliday: string | null) => {
+    setFocusedBlockId(null);
+    setMood(nextMood ?? undefined);
+    setHoliday(nextHoliday ?? undefined);
+  }, [setFocusedBlockId, setMood, setHoliday]);
 
   const handlePressHoliday = useCallback((id: string) => {
     setSelectedMood(null);

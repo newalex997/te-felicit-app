@@ -12,18 +12,12 @@ import { Card, CardFrame, CardOverlay } from "../styles/index.styles";
 import { CardImageButtons } from "./CardImageButtons";
 import { CardFont } from "./CardFont";
 import { Watermark } from "./Watermark";
+import { styles } from "../styles/greetingCard.styles";
 
 const CARD_FADE_DURATION = 800;
 const OVERLAY_COLORS = ["rgba(0,0,0,0.15)", "rgba(0,0,0,0.55)"] as const;
 const OVERLAY_START = { x: 0, y: 0 };
 const OVERLAY_END = { x: 0, y: 1 };
-const cardViewStyle = { flex: 1, backgroundColor: "black" } as const;
-const buttonsWrapperStyle = {
-  position: "absolute" as const,
-  top: 28,
-  right: 28,
-  zIndex: 10,
-};
 
 type Props = {
   cardStyle: AnimatedStyle<ViewStyle>;
@@ -47,8 +41,8 @@ export function GreetingCard({ cardStyle }: Props) {
   return (
     <Animated.View style={cardStyle}>
       <CardFrame>
-        <View ref={cardRef} collapsable={false} style={cardViewStyle}>
-          <Animated.View style={[{ flex: 1 }, imageStyle]}>
+        <View ref={cardRef} collapsable={false} style={styles.cardView}>
+          <Animated.View style={[styles.animatedImage, imageStyle]}>
             <Card
               source={imageUrl ? { uri: imageUrl } : undefined}
               resizeMode="cover"
@@ -67,7 +61,7 @@ export function GreetingCard({ cardStyle }: Props) {
         </View>
       </CardFrame>
 
-      <Animated.View style={[buttonsWrapperStyle, imageStyle]}>
+      <Animated.View style={[styles.buttonsWrapper, imageStyle]}>
         <CardImageButtons />
       </Animated.View>
     </Animated.View>

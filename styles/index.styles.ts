@@ -25,7 +25,6 @@ export const CardOverlay = styled(LinearGradient)`
   padding: ${({ theme }) => theme.space.xxl}px;
 `;
 
-
 export const CardIconButton = styled.Pressable`
   width: 36px;
   height: 36px;
@@ -82,9 +81,10 @@ export const Header = styled.View<{ paddingTop: number }>`
 
 export const SectionLabel = styled.Text`
   color: rgba(255, 255, 255, 0.45);
-  font-size: 11px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 1.2px;
+  align-self: center;
 `;
 
 export const HeaderActions = styled.View`

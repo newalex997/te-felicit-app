@@ -12,7 +12,7 @@ export const EmptyText = styled.Text`
 export const ColumnWrapper = { gap: 10 } as const;
 
 export const Card = styled.Pressable`
-  height: 200px;
+  aspect-ratio: ${2 / 3};
   border-radius: ${({ theme }) => theme.radii.md}px;
   overflow: hidden;
   background-color: #333;

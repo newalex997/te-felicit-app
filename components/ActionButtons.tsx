@@ -1,4 +1,7 @@
+import { useCallback } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useGreetingContext } from "../context/GreetingContext";
+import { useShareContext } from "../context/ShareContext";
 import { useI18n } from "../context/I18nContext";
 import {
   Buttons,
@@ -10,14 +13,18 @@ import {
 
 type ActionButtonsProps = {
   swipe: () => void;
-  loading: boolean;
-  share: () => void;
-  sharing: boolean;
 };
 
-export function ActionButtons({ swipe, loading, share, sharing }: ActionButtonsProps) {
+export function ActionButtons({ swipe: swipeCard }: ActionButtonsProps) {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
+  const { loading, setFocusedBlockId } = useGreetingContext();
+  const { share, sharing } = useShareContext();
+
+  const swipe = useCallback(() => {
+    setFocusedBlockId(null);
+    swipeCard();
+  }, [setFocusedBlockId, swipeCard]);
 
   return (
     <Buttons style={{ paddingBottom: insets.bottom + 16 }}>

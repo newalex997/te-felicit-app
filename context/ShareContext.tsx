@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { captureRef } from "react-native-view-shot";
+import { captureCardAsBase64, captureCardAsUri } from "../utils/cardCapture";
 
 interface ShareContextValue {
   cardRef: React.RefObject<null>;
@@ -23,21 +23,16 @@ export function ShareProvider({ children }: { children: React.ReactNode }) {
 
   const captureCard = useCallback(async (): Promise<string> => {
     if (!cardRef.current) return "";
-    return captureRef(cardRef, { format: "jpg", quality: 0.7, result: "base64" });
+    return captureCardAsBase64(cardRef);
   }, []);
 
   const share = useCallback(async () => {
     if (!cardRef.current || sharing) return;
+
     setSharing(true);
     try {
-      const uri = await captureRef(cardRef, {
-        format: "jpg",
-        quality: 1,
-        fileName: "greeting",
-      });
-
+      const uri = await captureCardAsUri(cardRef);
       const isAvailable = await Sharing.isAvailableAsync();
-
       if (isAvailable) {
         await Sharing.shareAsync(uri, { mimeType: "image/jpeg" });
       }
