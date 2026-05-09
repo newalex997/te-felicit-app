@@ -18,7 +18,7 @@
       }
     },
     "android": {
-      "versionCode": 105,
+      "versionCode": 106,
       "package": "com.pipedigital.mesajedinsuflet",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",

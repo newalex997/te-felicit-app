@@ -32,8 +32,8 @@ export function CardFontButtons() {
 
   const focusedBlock = textBlocks.find((b) => b.id === focusedBlockId);
   const textEffectActive = focusedBlock?.textEffect !== "none";
-  const currentFontSize = focusedBlock?.fontSize ?? 0;
-  const baseFontSize = focusedBlock?.baseFontSize ?? 0;
+  const currentFontSize = focusedBlock?.fontSize ?? 1;
+  const baseFontSize = focusedBlock?.baseFontSize ?? 1;
 
   const EffectButton = textEffectActive ? ActiveIconButton : CardIconButton;
 

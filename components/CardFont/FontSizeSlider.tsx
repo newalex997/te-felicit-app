@@ -73,6 +73,8 @@ export function FontSizeSlider({ value, baseFontSize, onChange }: Props) {
   }, [value, fontMin, fontMax, thumbX]);
 
   const panGesture = Gesture.Pan()
+    .activeOffsetX([-5, 5])
+    .failOffsetY([-10, 10])
     .hitSlop({ vertical: 20 })
     .runOnJS(true)
     .onBegin(() => {

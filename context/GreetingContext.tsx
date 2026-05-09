@@ -86,7 +86,7 @@ function buildBlock(
     text: texts[id],
     fontFamily: state.fontFamily,
     fontSize: state.fontSize,
-    baseFontSize: config?.fontSize ?? 0,
+    baseFontSize: config?.fontSize ?? 1,
     lineHeight: state.lineHeight,
     color: state.color,
     textEffect: state.textEffect,

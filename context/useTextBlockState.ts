@@ -97,9 +97,7 @@ const LINE_HEIGHT_RATIO = 1.4;
 
 export function useTextBlockState(initialConfig: BlockConfig | null) {
   const [fontIndex, setFontIndex] = useState(0);
-  const [fontSize, setFontSize] = useState<number>(
-    initialConfig?.fontSize ?? 0,
-  );
+  const [fontSize, setFontSize] = useState(initialConfig?.fontSize ?? 1);
   const [color, setColor] = useState<string>(
     initialConfig?.color ?? TEXT_COLORS[0],
   );
@@ -118,7 +116,7 @@ export function useTextBlockState(initialConfig: BlockConfig | null) {
       ? FONTS.indexOf(initialConfig.fontFamily)
       : -1;
     setFontIndex(savedFontIdx >= 0 ? savedFontIdx : 0);
-    setFontSize(initialConfig?.fontSize ?? 0);
+    setFontSize(initialConfig?.fontSize ?? 1);
     setColor(initialConfig?.color ?? TEXT_COLORS[0]);
     setTextEffect(initialConfig?.textEffect ?? "none");
     setTextAlign(initialConfig?.textAlign ?? "center");

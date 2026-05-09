@@ -1,7 +1,11 @@
-import { View } from "react-native";
+import { styled } from "styled-components/native";
 import { TextBlock } from "../../context/GreetingContext";
 import { DraggableText } from "./DraggableText";
 import { useTextElementState } from "./useTextElementState";
+
+const TextContainer = styled.View`
+  width: 85%;
+`;
 
 type Props = {
   block: TextBlock;
@@ -24,7 +28,7 @@ export function TextBlockItem({
   if (isEditing) return null;
 
   return (
-    <View onLayout={(e) => onWidthChange(e.nativeEvent.layout.width)}>
+    <TextContainer onLayout={(e) => onWidthChange(e.nativeEvent.layout.width)}>
       <DraggableText
         state={state}
         style={{
@@ -40,6 +44,6 @@ export function TextBlockItem({
       >
         {block.text}
       </DraggableText>
-    </View>
+    </TextContainer>
   );
 }
